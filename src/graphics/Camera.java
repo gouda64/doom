@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class Camera {
+public class Camera { //TODO: work on textures
     private int width;
     private int height;
     private double fov; //scaling factor is 1/tan(theta/2) for x and y
@@ -21,7 +21,7 @@ public class Camera {
     private double yaw; //basically left-right rotation
     private double pitch; //up-down rotations
 
-    public Camera(int width, int height) {
+    public Camera(int width, int height, String mapFile) {
         this.width = width;
         this.height = height;
 
@@ -39,6 +39,7 @@ public class Camera {
         // for debugging (literally one triangle)
 
         meshCube = new Mesh(new ArrayList<>());
+        meshCube.readObj(mapFile);
     }
 
 
@@ -46,7 +47,7 @@ public class Camera {
         //later - optimize - preserve info with small/no view changes - might be in other class
         ArrayList<Triangle> trisToDraw = new ArrayList<>();
 
-        //TODO: clean up sometime (what does this even mean??
+        //TODO: clean up sometime (what does this even mean??)
         double[][] worldMat = Matrix.multiplyMat(Matrix.matRotZ(0), Matrix.matRotX(0));
         worldMat = Matrix.multiplyMat(worldMat, Matrix.matTranslation(0, 0, 10));
 

@@ -3,8 +3,8 @@ package graphics;
 import java.awt.*;
 
 public class Triangle {
-    Point p1, p2, p3;
-    Color c; //TODO: change color storage method?
+    public Point p1, p2, p3;
+    public Color c; //TODO: change color storage method?
 
     public Triangle(Point p1, Point p2, Point p3) {
         this.p1 = p1;

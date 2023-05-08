@@ -5,8 +5,9 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class Mesh { //if this is still useless later on get rid of it
+public class Mesh {
     //also convert to list sometime or smth
+    //associate triangles with textures - list with filePath? or BufferedImage reference
     ArrayList<Triangle> tris;
 
     public Mesh(ArrayList<Triangle> t) {

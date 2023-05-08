@@ -71,9 +71,9 @@ public class Matrix {
     }
 
     public static double[][] multiplyMat(double[][] m1, double[][] m2) {
-        double[][] mat = new double[4][4];
-        for (int r = 0; r < 4; r++) {
-            for (int c = 0; c < 4; c++) {
+        double[][] mat = new double[m1.length][m2.length];
+        for (int r = 0; r < m1.length; r++) {
+            for (int c = 0; c < m2.length; c++) {
                 mat[r][c] = m1[r][0]*m2[0][c] + m1[r][1]*m2[1][c] + m1[r][2]*m2[2][c] + m1[r][3]*m2[3][c];
             }
         }

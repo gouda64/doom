@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 
 import graphics.Camera;
 import graphics.Triangle;
@@ -20,7 +19,6 @@ public class DoomPanel extends JPanel {
         this.setFocusable(true);
         this.addKeyListener(new DoomKeyAdapter());
 
-        System.out.println(new File(".").getAbsolutePath());
         camera = new Camera(WIDTH, HEIGHT, "./src/graphics/test-cube.txt");
     }
 

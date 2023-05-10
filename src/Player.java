@@ -1,15 +1,15 @@
 public class Player {
-    public int health;
-    public int ammo;
-    public int armour;
-    public Weapon[] inventory;
+    private int health;
+    private int ammo;
+    private int armour;
+    private Weapon[] inventory;
 
-    public static final int PISTOL = 2;
-    public static final int SHOTGUN = 3;
-    public static final int CHAINGUN = 4;
-    public static final int ROCKETLAUNCHER = 5;
-    public static final int PLASMAGUN = 6;
-    public static final int BFG9000 = 7;
+    private static final int PISTOL = 2;
+    private static final int SHOTGUN = 3;
+    private static final int CHAINGUN = 4;
+    private static final int ROCKETLAUNCHER = 5;
+    private static final int PLASMAGUN = 6;
+    private static final int BFG9000 = 7;
 
     public Player()
     {

@@ -1,3 +1,5 @@
+package entity;
+
 public class Player {
     private int health;
     private int ammo;

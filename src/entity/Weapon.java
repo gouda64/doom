@@ -1,6 +1,10 @@
+package entity;
+
+import entity.Sprite;
+
 import java.lang.Math;
 
-public class Weapon implements Sprite{
+public class Weapon implements Sprite {
     private static final int PISTOL = 2;
     private static final int SHOTGUN = 3;
     private static final int CHAINGUN = 4;

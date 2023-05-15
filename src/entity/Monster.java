@@ -1,4 +1,6 @@
-public class Monster implements Sprite{
+package entity;
+
+public class Monster implements Sprite {
 
     private int health;
 

@@ -1,23 +1,32 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 import graphics.Camera;
+import graphics.Rasterizer;
 import graphics.Triangle;
 
 public class DoomPanel extends JPanel {
-    static final int WIDTH = 640;
-    static final int HEIGHT = 5*WIDTH/8;
-    //a little messed up bc og doom has rectangle pixels
-    private Camera camera;
+    static final int WIDTH = 1200;
+    static final int HEIGHT = 600;
+
+    private final Camera camera;
+
+    private int mouseX;
+    private int mouseY;
+    private boolean firstMove;
 
     public DoomPanel() {
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setLayout(null);
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
-        this.addKeyListener(new DoomKeyAdapter());
+        this.addKeyListener(new GKeyAdapter());
+        this.addMouseMotionListener(new GMouseAdapter());
+
+        mouseX = 0;
+        mouseY = 0;
+        firstMove = true;
 
         camera = new Camera(WIDTH, HEIGHT, "./src/graphics/test-cube.txt");
     }
@@ -28,38 +37,59 @@ public class DoomPanel extends JPanel {
         draw(g);
     }
     public void draw(Graphics g) {
-        g.setColor(Color.WHITE);
         for (Triangle t : camera.view()) {
-            drawTri(g, t);
+            //g.setColor(t.c);
+            Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
+            g.setColor(Color.WHITE);
+            drawTriangle(g, t);
         }
-        //g.drawString("DOOM", WIDTH/2, HEIGHT/2);
-    }
-    private static void drawTri(Graphics g, Triangle t) {
-        g.drawLine(WIDTH-(int) t.p1.x, HEIGHT-(int) t.p1.y, WIDTH-(int) t.p2.x, HEIGHT-(int) t.p2.y);
-        g.drawLine(WIDTH-(int) t.p1.x, HEIGHT-(int) t.p1.y, WIDTH-(int) t.p3.x, HEIGHT-(int) t.p3.y);
-        g.drawLine(WIDTH-(int) t.p3.x, HEIGHT-(int) t.p3.y, WIDTH-(int) t.p2.x, HEIGHT-(int) t.p2.y);
     }
 
-    public class DoomKeyAdapter extends KeyAdapter {
+    public static void drawTriangle(Graphics g, Triangle t) {
+        g.drawLine(WIDTH-(int) t.pts[0].x, HEIGHT-(int) t.pts[0].y, WIDTH-(int) t.pts[1].x, HEIGHT-(int) t.pts[1].y);
+        g.drawLine(WIDTH-(int) t.pts[0].x, HEIGHT-(int) t.pts[0].y, WIDTH-(int) t.pts[2].x, HEIGHT-(int) t.pts[2].y);
+        g.drawLine(WIDTH-(int) t.pts[2].x, HEIGHT-(int) t.pts[2].y, WIDTH-(int) t.pts[1].x, HEIGHT-(int) t.pts[1].y);
+    }
+
+    public class GKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
+            final double movement = 0.3;
+            final double rotation = 0.2;
             switch (e.getKeyCode()) {
-                case KeyEvent.VK_SPACE -> camera.moveY(1);
-                case KeyEvent.VK_SHIFT -> camera.moveY(-1);
-                case KeyEvent.VK_D -> camera.moveRightLeft(1);
-                case KeyEvent.VK_A -> camera.moveRightLeft(-1);
-                case KeyEvent.VK_W -> camera.moveForBack(1);
-                case KeyEvent.VK_S -> camera.moveForBack(-1);
-                case KeyEvent.VK_LEFT -> camera.turnRightLeft(-0.2);
-                case KeyEvent.VK_RIGHT -> camera.turnRightLeft(0.2);
-                case KeyEvent.VK_UP -> camera.turnUpDown(0.2);
-                case KeyEvent.VK_DOWN -> camera.turnUpDown(-0.2);
+                case KeyEvent.VK_SPACE -> camera.moveY(movement);
+                case KeyEvent.VK_SHIFT -> camera.moveY(-movement);
+                case KeyEvent.VK_D -> camera.moveRightLeft(movement);
+                case KeyEvent.VK_A -> camera.moveRightLeft(-movement);
+                case KeyEvent.VK_W -> camera.moveForBack(movement);
+                case KeyEvent.VK_S -> camera.moveForBack(-movement);
+                case KeyEvent.VK_LEFT -> camera.turnRightLeft(-rotation);
+                case KeyEvent.VK_RIGHT -> camera.turnRightLeft(rotation);
+                //case KeyEvent.VK_UP -> camera.turnUpDown(rotation);
+                //case KeyEvent.VK_DOWN -> camera.turnUpDown(-rotation);
             }
             repaint();
         }
         @Override
         public void keyReleased(KeyEvent e) {
 
+        }
+    }
+
+    public class GMouseAdapter extends MouseAdapter {
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            if (!firstMove) {
+                //camera.turnUpDown(-0.005*(e.getYOnScreen() - mouseY));
+                camera.turnRightLeft(.005*(e.getXOnScreen() - mouseX));
+            }
+            else {
+                firstMove = false;
+            }
+            mouseX = e.getXOnScreen();
+            mouseY = e.getYOnScreen();
+
+            repaint();
         }
     }
 }

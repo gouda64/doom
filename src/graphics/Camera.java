@@ -1,25 +1,17 @@
 package graphics;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class Camera { //TODO: work on textures
-    private int width;
-    private int height;
-    private double fov; //scaling factor is 1/tan(theta/2) for x and y
-    //zfar/(zfar-znear), aka scaling factor for z
-    //offset factor for z -(zfar*znear)/(zfar-znear)
-    //x, y, z -> aspectRatio*x*scaleFactor/z, y*scaleFactor/z, zScale*z - (zfar*znear)/(zfar-znear)
-    //x' = x/z and y' = y/z (inverse proportionality)
-    //input vector [x, y, z, 1]
-    //projection matrix (multiply with input vector) [[xCoeff, 0, 0, 0], [0, yCoeff, 0, 0], [0, 0, zCoeff, zDispl], [0, 0, 1, 0]]
-    private final Mesh meshCube;
-    private double[][] projectionMatrix; //multiply by the input point/vector to normalize it into the screen space!
+public class Camera {
+    private final int width;
+    private final int height;
+    private final double fov;
+    private final Mesh mesh;
+    private final double[][] projectionMatrix;
     private Point camera;
     private Point lookDir;
-    private double yaw; //basically left-right rotation
-    private double pitch; //up-down rotations
+    private double yaw;
 
     public Camera(int width, int height, String mapFile) {
         this.width = width;
@@ -31,134 +23,116 @@ public class Camera { //TODO: work on textures
         camera = new Point(0, 0, 0);
         lookDir = new Point(0, 0, 1);
         yaw = 0;
-        pitch = 0;
 
-        //ArrayList<Triangle> t = new ArrayList<Triangle>();
-        //t.add(new Triangle(new Point(10, 10, 10), new Point(20, 20, 10), new Point(30, 10, 10)));
-        //meshCube = new Mesh(t);
-        // for debugging (literally one triangle)
+//        List<Triangle> testTri = new ArrayList<>();
+//        testTri.add(new Triangle(new Point(10, 10, 10), new Point(20, 20, 10), new Point(30, 10, 10)));
+//        mesh = new Mesh(testTri);
+        // for debugging
 
-        meshCube = new Mesh(new ArrayList<>());
-        meshCube.readObj(mapFile);
+        mesh = new Mesh(new ArrayList<>());
+        mesh.readObj("./assets/cube.txt");
     }
 
+    public List<Triangle> view() {
+        //10??
+        double[][] worldMat = Matrix.translation(0, 0, 10);
 
-    public List<Triangle> view() { //later - convert to pixel by pixel system (somehow?)
-        //later - optimize - preserve info with small/no view changes - might be in other class
-        ArrayList<Triangle> trisToDraw = new ArrayList<>();
+        lookDir = Matrix.multiplyVecMat(new Point(0, 0, 1), Matrix.rotY(yaw));
 
-        //TODO: clean up sometime (what does this even mean??)
-        double[][] worldMat = Matrix.multiplyMat(Matrix.matRotZ(0), Matrix.matRotX(0));
-        worldMat = Matrix.multiplyMat(worldMat, Matrix.matTranslation(0, 0, 10));
-
-        lookDir = Matrix.multiplyVectMat(new Point(0, 0, 1), Matrix.matRotY(yaw));
-        //TODO: fix rotation bug
-        lookDir = Matrix.multiplyVectMat(lookDir, Matrix.matRotX(pitch));
         double[][] camMat = pointAt(camera, camera.add(lookDir), new Point(0, 1, 0))[1];
-        //we need the inverse!! not the og, emphasis on the [1]
+        List<Triangle> trisToDraw = cullAndProject(worldMat, camMat);
+        sortByAvgZ(trisToDraw);
 
-        //draw triangles
-        for (Triangle t : meshCube.tris) {
+        List<Triangle> view = new ArrayList<>();
+        for (Triangle t : trisToDraw) {
+            view.addAll(getClippedTris(t));
+        }
 
-            Triangle tTransformed = new Triangle(Matrix.multiplyVectMat(t.p1, worldMat),
-                    Matrix.multiplyVectMat(t.p2, worldMat), Matrix.multiplyVectMat(t.p3, worldMat));
+        return view;
+    }
 
-            //triangle culling
-            Point normal, line1, line2; //actually 3D vectors but I'm too lazy to make a new class
-            line1 = tTransformed.p2.sub(tTransformed.p1);
-            line2 = tTransformed.p3.sub(tTransformed.p1);
+    private List<Triangle> cullAndProject(double[][] worldMat, double[][] camMat) {
+        List<Triangle> trisToDraw = new ArrayList<>();
+
+        for (Triangle t : mesh.tris) {
+            Triangle tTransformed = transformTriByMat(t, worldMat);
+
+            Point normal, line1, line2;
+            line1 = tTransformed.pts[1].sub(tTransformed.pts[0]);
+            line2 = tTransformed.pts[2].sub(tTransformed.pts[0]);
             normal = line1.crossProduct(line2).normalize();
 
-            //if(true) {
-            if (normal.dotProduct(tTransformed.p1.sub(camera)) < 0) { //takes into account perspective w/ dot product
+            if (normal.dotProduct(tTransformed.pts[0].sub(camera)) < 0) {
+                Triangle tView = transformTriByMat(tTransformed, camMat);
 
-                //add lighting
-                Point light_direction = new Point(0, 0, -1).normalize(); //single direction, very simple because it's just a huge plane
-                //emitting consistent rays of light which is great because it's easy
+                Triangle[] clippedTris = triClipToPlane(new Point(0, 0, 0.1), new Point(0, 0, 1), tView);
+                for (Triangle tri : clippedTris) {
 
-                double dp = Math.max(0.25, light_direction.dotProduct(normal));
-                Color c = new Color((float)dp, (float)dp, (float)dp);
+                    Triangle tProjected = transformTriByMat(tri, projectionMatrix);
 
-                //converting world space to view space
-                Triangle tView = new Triangle(Matrix.multiplyVectMat(tTransformed.p1, camMat),
-                        Matrix.multiplyVectMat(tTransformed.p2, camMat), Matrix.multiplyVectMat(tTransformed.p3, camMat));
-
-                Triangle[] clippedTris = triClipToPlane(new Point(0, 0, 0.2), new Point(0, 0, 1), tView);
-                for (Triangle tris : clippedTris) {
-
-                    Triangle tProjected = new Triangle(Matrix.multiplyVectMat(tris.p1, projectionMatrix),
-                            Matrix.multiplyVectMat(tris.p2, projectionMatrix), Matrix.multiplyVectMat(tris.p3, projectionMatrix));
-
-                    //offset and scale
                     Point addP = new Point(1, 1, 0);
-                    tProjected.p1 = tProjected.p1.add(addP);
-                    tProjected.p2 = tProjected.p2.add(addP);
-                    tProjected.p3 = tProjected.p3.add(addP);
-
-                    tProjected.p1.x *= 0.5 * width;
-                    tProjected.p1.y *= 0.5 * height;
-                    tProjected.p2.x *= 0.5 * width;
-                    tProjected.p2.y *= 0.5 * height;
-                    tProjected.p3.x *= 0.5 * width;
-                    tProjected.p3.y *= 0.5 * height;
-
-                    tProjected.c = c;
+                    for (int i = 0; i < tProjected.pts.length; i++) {
+                        tProjected.pts[i] = tProjected.pts[i].add(addP);
+                    }
+                    for (int i = 0; i < tProjected.pts.length; i++) {
+                        tProjected.pts[i].x *= 0.5 * width;
+                        tProjected.pts[i].y *= 0.5 * height;
+                    }
 
                     trisToDraw.add(tProjected);
                 }
             }
         }
+        return trisToDraw;
+    }
 
-        Comparator<Triangle> compareByZ = (o1, o2) -> {
-            double z1 = (o1.p1.z + o1.p2.z + o1.p3.z)/3;
-            double z2 = (o2.p1.z + o2.p2.z + o2.p3.z)/3;
+    private List<Triangle> getClippedTris(Triangle t) {
+        List<Triangle> clippedTris = new ArrayList<>();
+        clippedTris.add(t);
+
+        int newTris = 1;
+        for (int i = 0; i < 4; i++) {
+
+            while (newTris > 0) {
+                Triangle test = clippedTris.remove(0);
+                newTris--;
+                Triangle[] clippedTemp = switch (i) {
+                    case 0 -> //top
+                            triClipToPlane(new Point(0, 0, 0), new Point(0, 1, 0), test);
+                    case 1 -> //bottom
+                            triClipToPlane(new Point(0, height - 1, 0), new Point(0, -1, 0), test);
+                    case 2 -> //left
+                            triClipToPlane(new Point(0, 0, 0), new Point(1, 0, 0), test);
+                    case 3 -> //right
+                            triClipToPlane(new Point(width - 1, 0, 0), new Point(-1, 0, 0), test);
+                    default -> new Triangle[0];
+                };
+
+                Collections.addAll(clippedTris, clippedTemp);
+            }
+            newTris = clippedTris.size();
+        }
+
+        return clippedTris;
+    }
+
+    private void sortByAvgZ(List<Triangle> tris) {
+        Comparator<Triangle> compareByZ = (t1, t2) -> {
+            double z1 = t1.avgZ();
+            double z2 = t2.avgZ();
             if (z1-z2 < 0) {
                 return 1;
-            }
-            if (z1-z2 == 0) {
-                return 0;
             }
             if (z1-z2 > 0){
                 return -1;
             }
             return 0;
         };
-        trisToDraw.sort(compareByZ);
-
-        List<Triangle> view = new ArrayList<>(); //later - optimize
-        for (Triangle t : trisToDraw) {
-            //clip triangles against screen edges
-            ArrayList<Triangle> trisToClip = new ArrayList<>();
-            trisToClip.add(t);
-
-            int newTris = 1;
-            for (int i = 0; i < 4; i++) {
-
-                while (newTris > 0) {
-                    Triangle test = trisToClip.remove(0);
-                    newTris--;
-                    Triangle[] clippedTris = switch (i) {
-                        case 0 -> //top
-                                triClipToPlane(new Point(0, 0, 0), new Point(0, 1, 0), test);
-                        case 1 -> //bottom
-                                triClipToPlane(new Point(0, height - 1, 0), new Point(0, -1, 0), test);
-                        case 2 -> //left
-                                triClipToPlane(new Point(0, 0, 0), new Point(1, 0, 0), test);
-                        case 3 -> //right
-                                triClipToPlane(new Point(width - 1, 0, 0), new Point(-1, 0, 0), test);
-                        default -> new Triangle[1];
-                    };
-
-                    Collections.addAll(trisToClip, clippedTris);
-                }
-                newTris = trisToClip.size();
-            }
-
-            //just to clarify it's called trisToClip but they're done clipping at this point
-            view.addAll(trisToClip);
-        }
-
-        return view;
+        tris.sort(compareByZ);
+    }
+    private Triangle transformTriByMat(Triangle t, double[][] mat) {
+        return new Triangle(Matrix.multiplyVecMat(t.pts[0], mat), //TODO: see if transfer method is fine
+                Matrix.multiplyVecMat(t.pts[1], mat), Matrix.multiplyVecMat(t.pts[2], mat), t.texPts, t.texFile);
     }
 
     private static double[][] matProjection(double fovDeg, double aspectRatio, double zNear, double zFar) {
@@ -174,91 +148,118 @@ public class Camera { //TODO: work on textures
 
     private static Point pointIntersectPlane(Point pPoint, Point pNormal, Point lStart, Point lEnd) {
         pNormal = pNormal.normalize();
-        double t = (pNormal.dotProduct(pPoint) - lStart.dotProduct(pNormal)) / (lEnd.dotProduct(pNormal) - lStart.dotProduct(pNormal));
-        //just something I found on stack overflow idk how it does it either
+        double t = (pNormal.dotProduct(pPoint) - lStart.dotProduct(pNormal)) /
+                (lEnd.dotProduct(pNormal) - lStart.dotProduct(pNormal));
         return lStart.add(lEnd.sub(lStart).mult(t));
     }
 
     private static Triangle[] triClipToPlane(Point pPoint, Point pNormal, Triangle t) {
+        //TODO: doesn't transfer texture, fix + perspective
         pNormal = pNormal.normalize();
-        //signed shortest distance from point to plane
-        Point temp = t.p1;
-        //DON'T normalize temp messes everything up I know from the week I spent debugging this thing
-        double dist1 = pNormal.x*temp.x + pNormal.y*temp.y + pNormal.z*temp.z - pNormal.dotProduct(pPoint);
-        temp = t.p2;
-        double dist2 = pNormal.dotProduct(temp) - pNormal.dotProduct(pPoint);
-        temp = t.p3;
-        double dist3 = pNormal.dotProduct(temp)- pNormal.dotProduct(pPoint);
+        double[] dists = new double[3];
+        for (int i = 0; i < 3; i++) {
+            Point temp = t.pts[i];//.normalize();
+            dists[i] = pNormal.dotProduct(temp) - pNormal.dotProduct(pPoint);
+        }
+
         Point[] inside = new Point[3]; int inNum = 0;
         Point[] outside = new Point[3]; int outNum = 0;
+        Point[] insideTex = new Point[3];
+        Point[] outsideTex = new Point[3];
 
-        if (dist1 >= 0) {
-            inside[inNum] = t.p1;
-            inNum++;
-        }
-        else {
-            outside[outNum] = t.p1;
-            outNum++;
-        }
-        if (dist2 >= 0) {
-            inside[inNum] = t.p2;
-            inNum++;
-        }
-        else {
-            outside[outNum] = t.p2;
-            outNum++;
-        }
-        if (dist3 >= 0) {
-            inside[inNum] = t.p3;
-            inNum++;
-        }
-        else {
-            outside[outNum] = t.p3;
-            outNum++;
+        for (int i = 0; i < dists.length; i++) {
+            if (dists[i] >= 0) {
+                inside[inNum] = t.pts[i];
+                insideTex[inNum] = t.texPts[i];
+                inNum++;
+            }
+            else {
+                outside[outNum] = t.pts[i];
+                outsideTex[outNum] = t.texPts[i];
+                outNum++;
+            }
         }
 
-        if (inNum == 0) {
-            return new Triangle[] {};
-        }
-        else if (inNum == 3) {
-            return new Triangle[] {t};
-        }
-        else if (inNum == 1) {
-            Triangle newT = new Triangle(null, null, null);
-            newT.p1 = inside[0];
-            newT.p2 = pointIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
-            newT.p3 = pointIntersectPlane(pPoint, pNormal, inside[0], outside[1]);
+//        int i = 1;
+//        if (i == 1) return new Triangle[]{t};
 
-            newT.c = t.c; //you can set this and the two below to different colors for a nice demonstration of clipping
+        switch (inNum) {
+            case 0:
+                return new Triangle[]{};
+            case 3:
+                return new Triangle[]{t};
+            case 1:
+                Triangle newT = new Triangle(null, null, null);
+                newT.texFile = t.texFile;
 
-            return new Triangle[] {newT};
-        }
-        else {
-            Triangle newT1 = new Triangle(null, null, null);
-            Triangle newT2 = new Triangle(null, null, null);
+                newT.pts[0] = inside[0];
+                newT.pts[1] = pointIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
+                newT.pts[2] = pointIntersectPlane(pPoint, pNormal, inside[0], outside[1]);
 
-            newT1.p1 = inside[0];
-            newT1.p2 = inside[1];
-            newT1.p3 = pointIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
+                newT.texPts[0] = insideTex[0];
+                double t1 = (pNormal.dotProduct(pPoint) - inside[0].dotProduct(pNormal)) /
+                        (outside[0].dotProduct(pNormal) - inside[0].dotProduct(pNormal)); //same thing as inside pIP
+//                if (Double.isNaN(t1)) {
+//                    System.out.println("no! " + Arrays.toString(t.pts));
+//                }
 
-            newT2.p1 = inside[1];
-            newT2.p2 = pointIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
-            newT2.p3 = pointIntersectPlane(pPoint, pNormal, inside[1], outside[0]);
+                newT.texPts[1] = new Point(t1*(outsideTex[0].x - insideTex[0].x) + insideTex[0].x,
+                        t1*(outsideTex[0].y - insideTex[0].y) + insideTex[0].y);
 
-            newT1.c = t.c;
-            newT2.c = t.c;
+                t1 = (pNormal.dotProduct(pPoint) - inside[0].dotProduct(pNormal)) /
+                        (outside[1].dotProduct(pNormal) - inside[0].dotProduct(pNormal));
+                newT.texPts[2]= new Point(t1*(outsideTex[1].x - insideTex[0].x) + insideTex[0].x,
+                        t1*(outsideTex[1].y - insideTex[0].y) + insideTex[0].y);
 
-            return new Triangle[] {newT1, newT2};
+                newT.c = t.c;
+
+                System.out.println(Arrays.toString(newT.texPts));
+
+                return new Triangle[]{newT};
+            default: //quad case
+                Triangle newT1 = new Triangle(null, null, null);
+                Triangle newT2 = new Triangle(null, null, null);
+
+                newT1.texFile = t.texFile;
+                newT2.texFile = t.texFile;
+
+                newT1.pts[0] = inside[0];
+                newT1.pts[1] = inside[1];
+                newT1.pts[2] = pointIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
+
+                newT1.texPts[0] = insideTex[0];
+                newT1.texPts[1] = insideTex[1];
+                t1 = (pNormal.dotProduct(pPoint) - inside[0].dotProduct(pNormal)) /
+                        (outside[0].dotProduct(pNormal) - inside[0].dotProduct(pNormal));
+                newT1.texPts[2] = new Point(t1*(outsideTex[0].x - insideTex[0].x) + insideTex[0].x,
+                        t1*(outsideTex[0].y - insideTex[0].y) + insideTex[0].y);
+
+                newT2.pts[0] = inside[1];
+                newT2.pts[1] = newT1.pts[2];
+                newT2.pts[2] = pointIntersectPlane(pPoint, pNormal, inside[1], outside[0]);
+
+                newT2.texPts[0] = insideTex[1];
+                newT2.texPts[1] = newT1.texPts[2];
+                t1 = (pNormal.dotProduct(pPoint) - inside[1].dotProduct(pNormal)) /
+                        (outside[0].dotProduct(pNormal) - inside[1].dotProduct(pNormal));
+                newT2.texPts[2] = new Point(t1*(outsideTex[0].x - insideTex[1].x) + insideTex[1].x,
+                        t1*(outsideTex[0].y - insideTex[1].y) + insideTex[1].y);
+
+                newT1.c = t.c; newT2.c = t.c;
+
+                System.out.println(Arrays.toString(newT1.texPts));
+                System.out.println(Arrays.toString(newT2.texPts));
+
+                return new Triangle[]{newT1, newT2};
         }
     }
 
-    private static double[][][] pointAt(Point pos, Point target, Point up) { //camera info!!
+    private static double[][][] pointAt(Point pos, Point target, Point up) {
         Point newForward = target.sub(pos).normalize();
-        Point newUp = up.sub(newForward.mult(up.dotProduct(newForward))).normalize(); //how much does newForward affect up?
-        //just visualize the things graphically and it works out, if my linear-algebra-averse brain can do it, you can definitely do it!
+        Point newUp = up.sub(newForward.mult(up.dotProduct(newForward))).normalize();
         Point newRight = newUp.crossProduct(newForward);
 
-        double[][] mat = new double[4][4]; //transformation matrix for looking at stuff
+        double[][] mat = new double[4][4];
         mat[0][0] = newRight.x; mat[0][1] = newRight.y; mat[0][2] = newRight.z;
         mat[1][0] = newUp.x; mat[1][1] = newUp.y; mat[1][2] = newUp.z;
         mat[2][0] = newForward.x; mat[2][1] = newForward.y; mat[2][2] = newForward.z;
@@ -285,8 +286,15 @@ public class Camera { //TODO: work on textures
     }
     public void turnRightLeft(double amt) {
         yaw += amt;
+        yaw %= 2*Math.PI;
     }
-    public void turnUpDown(double amt) {
-        pitch += amt;
-    }
+//    public void turnUpDown(double amt) {
+//        pitch += amt;
+//        if (pitch >= Math.PI/2) {
+//            pitch = Math.PI/2 - 0.01;
+//        }
+//        else if (pitch <= -Math.PI/2) {
+//            pitch = -Math.PI/2 + 0.01;
+//        }
+//    }
 }

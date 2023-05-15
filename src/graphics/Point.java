@@ -1,14 +1,17 @@
 package graphics;
 
 public class Point {
-    //maybe make some constants sometime (like unit vecs)
-
     public double x, y, z;
 
     public Point(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+        z = 0;
     }
 
     public Point add(Point p2) {

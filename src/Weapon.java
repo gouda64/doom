@@ -1,15 +1,17 @@
-public class Weapon {
-    public static final int PISTOL = 2;
-    public static final int SHOTGUN = 3;
-    public static final int CHAINGUN = 4;
-    public static final int ROCKETLAUNCHER = 5;
-    public static final int PLASMAGUN = 6;
-    public static final int BFG9000 = 7;
+import java.lang.Math;
 
-    public int meanDamage;
-    public int deviation;
-    public int fireDelay;
-    public int type;
+public class Weapon implements Sprite{
+    private static final int PISTOL = 2;
+    private static final int SHOTGUN = 3;
+    private static final int CHAINGUN = 4;
+    private static final int ROCKETLAUNCHER = 5;
+    private static final int PLASMAGUN = 6;
+    private static final int BFG9000 = 7;
+
+    private int meanDamage;
+    private int deviation;
+    private int fireDelay;
+    private int type;
 
 
 

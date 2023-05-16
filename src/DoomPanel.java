@@ -6,7 +6,7 @@ import graphics.Camera;
 import graphics.Rasterizer;
 import graphics.Triangle;
 
-public class DoomPanel extends JPanel {
+public class DoomPanel extends JPanel implements ActionListener {
     static final int WIDTH = 1200;
     static final int HEIGHT = 600;
 
@@ -17,6 +17,7 @@ public class DoomPanel extends JPanel {
     private boolean firstMove;
 
     private Game game;
+    private Timer timer;
 
     public DoomPanel() {
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -28,6 +29,8 @@ public class DoomPanel extends JPanel {
 
         game = new Game();
 
+        timer = new Timer(17, this);
+        timer.start();
 
         mouseX = 0;
         mouseY = 0;
@@ -52,6 +55,8 @@ public class DoomPanel extends JPanel {
         g.drawString("Health", 407, 590);
         g.drawString("Inventory", 680, 590);
         g.drawString("Armor", 1010, 590);
+        g.setColor(Color.WHITE);
+        g.drawRect(575, 400, 50, 100);
 
         drawPanel(g);
 
@@ -106,6 +111,13 @@ public class DoomPanel extends JPanel {
         g.drawLine(WIDTH-(int) t.pts[0].x, HEIGHT-(int) t.pts[0].y, WIDTH-(int) t.pts[1].x, HEIGHT-(int) t.pts[1].y);
         g.drawLine(WIDTH-(int) t.pts[0].x, HEIGHT-(int) t.pts[0].y, WIDTH-(int) t.pts[2].x, HEIGHT-(int) t.pts[2].y);
         g.drawLine(WIDTH-(int) t.pts[2].x, HEIGHT-(int) t.pts[2].y, WIDTH-(int) t.pts[1].x, HEIGHT-(int) t.pts[1].y);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //update game here
+
+        repaint();
     }
 
     public class GKeyAdapter extends KeyAdapter {

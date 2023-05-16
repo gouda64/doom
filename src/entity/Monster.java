@@ -1,6 +1,13 @@
 package entity;
 
+import graphics.Point;
+
+import java.awt.image.BufferedImage;
+
 public class Monster implements Sprite {
+
+    private Point position;
+    private BufferedImage texture;
 
     private int health;
 
@@ -16,10 +23,11 @@ public class Monster implements Sprite {
     private static final int MANCUBUS = 4;
     private static final int SPIDER = 5;
 
-    public Monster(int type)
+    public Monster(int type, Point initPosition)
     {
+        position = initPosition;
         this.type = type;
-        if (type == ZOMBIEMAN) {
+        if (type == ZOMBIEMAN) { //TODO: init textures
             health = 20;
             damage = 9;
             fireDelay = 2500;
@@ -64,5 +72,14 @@ public class Monster implements Sprite {
     public int getDamage (){return damage;}
 
 
+    @Override
+    public Point getPosition() {
+        return position;
+    }
+
+    @Override
+    public BufferedImage getTexture() {
+        return texture;
+    }
 
 }

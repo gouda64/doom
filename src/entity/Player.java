@@ -3,7 +3,7 @@ package entity;
 public class Player {
     private int health;
     private int ammo;
-    private int armour;
+    private int armor;
     private Weapon[] inventory;
 
     private static final int PISTOL = 2;
@@ -17,7 +17,7 @@ public class Player {
     {
         health = 100;
         ammo = 50;
-        armour = 0;
+        armor = 0;
         inventory = new Weapon[6];
         inventory[0] = new Weapon(2);
     }
@@ -41,24 +41,39 @@ public class Player {
         health++;
     }
 
+    public int getInventorySize()
+    {
+        int a = 0;
+        while (inventory[a]!=null && a!=inventory.length)
+        {
+            a++;
+        }
+        return a;
+    }
+
+    public int getHealth(){return health;}
+    public int getAmmo(){return ammo;}
+    public int getArmor(){return armor;}
+
+
     public void pickUpAmmo()
     {
         ammo++;
     }
 
-    public void pickUpArmour()
+    public void pickUpArmor()
     {
-        armour++;
+        armor++;
     }
 
     public void damage(int HP)
     {
         HP /= 2;
-        armour-=HP;
-        if (armour<0)
+        armor -=HP;
+        if (armor <0)
         {
-            health += armour;
-            armour = 0;
+            health += armor;
+            armor = 0;
         }
         health-= HP;
     }

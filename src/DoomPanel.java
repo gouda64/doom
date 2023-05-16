@@ -24,6 +24,7 @@ public class DoomPanel extends JPanel {
         this.addKeyListener(new GKeyAdapter());
         this.addMouseMotionListener(new GMouseAdapter());
 
+
         mouseX = 0;
         mouseY = 0;
         firstMove = true;
@@ -33,8 +34,21 @@ public class DoomPanel extends JPanel {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         draw(g);
+        g.setColor(new Color (210, 180, 140));
+        g.drawRect(0, 500,1200, 600);
+        g.fillRect(0, 500,1200, 600);
+        g.setColor(Color.BLACK);
+        Font stringFont = new Font( "Serif", Font.PLAIN, 25 );
+        g.setFont(stringFont);
+        g.drawString("Ammo", 80, 590);
+        g.drawLine(240,500,240,600);
+        g.drawLine(480,500,480,600);
+        g.drawLine(720,500,720,600);
+        g.drawLine(960,500,960,600);
+        g.drawLine(1200,500,1200,600);
+        g.drawString("Health", 320, 590);
+
     }
     public void draw(Graphics g) {
         for (Triangle t : camera.view()) {

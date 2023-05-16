@@ -42,7 +42,11 @@ public class Mesh {
                         int[] indices = new int[4];
                         int i = 0;
                         while (str.hasMoreTokens() && i < 4) {
-                            indices[i] = Integer.parseInt(str.nextToken());
+                            String token = str.nextToken();
+                            if (token.contains("/"))
+                                indices[i] = Integer.parseInt(token.substring(0, token.indexOf("/")));
+                            else
+                                indices[i] = Integer.parseInt(token);
                             i++;
                         }
                         if (indices[3] == 0) {

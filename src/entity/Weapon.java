@@ -1,7 +1,9 @@
 package entity;
 
-import entity.Sprite;
+import graphics.Point;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.Math;
 
 public class Weapon implements Sprite {
@@ -12,6 +14,9 @@ public class Weapon implements Sprite {
     private static final int PLASMAGUN = 6;
     private static final int BFG9000 = 7;
 
+    private Point position;
+    private BufferedImage texture;
+
     private int meanDamage;
     private int deviation;
     private int fireDelay;
@@ -19,9 +24,11 @@ public class Weapon implements Sprite {
 
 
 
-    public Weapon(int weaponType) {
+
+    public Weapon(int weaponType, Point initPosition) throws IOException {
+        position = initPosition;
         type = weaponType;
-        if (type == PISTOL) {
+        if (type == PISTOL) { //TODO: assign texture based on imgs
             meanDamage = 10;
             deviation = 5;
             fireDelay = 2500;
@@ -48,12 +55,22 @@ public class Weapon implements Sprite {
         }
     }
 
-        public int getType()
+    public int getType()
         {
             return type;
         }
 
-    public int getfireDelay()
+    @Override
+    public Point getPosition() {
+        return position;
+    }
+
+    @Override
+    public BufferedImage getTexture() {
+        return texture;
+    }
+
+    public int getFireDelay()
     {
         return fireDelay;
     }

@@ -30,7 +30,11 @@ public class Camera {
         // for debugging
 
         mesh = new Mesh(new ArrayList<>());
-        mesh.readObj("./assets/cube.txt");
+        mesh.readObj(mapFile);
+    }
+
+    public Mesh getMesh() {
+        return mesh;
     }
 
     public List<Triangle> view() {
@@ -54,7 +58,7 @@ public class Camera {
     private List<Triangle> cullAndProject(double[][] worldMat, double[][] camMat) {
         List<Triangle> trisToDraw = new ArrayList<>();
 
-        for (Triangle t : mesh.tris) {
+        for (Triangle t : mesh.getAllTris()) {
             Triangle tTransformed = transformTriByMat(t, worldMat);
 
             Point normal, line1, line2;

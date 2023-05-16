@@ -3,15 +3,26 @@ package graphics;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class Mesh {
     //also convert to list sometime or smth
     //associate triangles with textures - list with filePath? or BufferedImage reference
-    ArrayList<Triangle> tris;
+    private ArrayList<Triangle> tris;
+    List<Triangle> tempTris = new ArrayList<>();
 
     public Mesh(ArrayList<Triangle> t) {
         tris = t;
+    }
+
+
+
+    public List<Triangle> getAllTris() {
+        List<Triangle> allTs = new ArrayList<>();
+        allTs.addAll(tris);
+        allTs.addAll(tempTris);
+        return allTs;
     }
 
     public boolean readObj(String fileName) {

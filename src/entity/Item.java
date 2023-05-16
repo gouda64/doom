@@ -1,19 +1,16 @@
 package entity;
 
+import graphics.Point;
+
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ImageObserver;
-import java.awt.image.RenderedImage;
-import java.awt.image.renderable.RenderableImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class Item implements Sprite {
 
-
-
-    private BufferedImage img;
+    private BufferedImage texture;
+    private Point position;
 
     private int type;
     private int height;
@@ -23,31 +20,41 @@ public class Item implements Sprite {
     private static final int AMMO = 1;
     private static final int ARMOR = 2;
 
-    public Item (int type) throws IOException
+
+
+    public Item (int type, Point initPosition) throws IOException
     {
+        position = initPosition;
         this.type = type;
 
         if (type == HEALTH)
         {
-            img = ImageIO.read(new File("DoomHealthBonus.jpeg"));
-            width = img.getWidth();
-            height = img.getHeight();
+            texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
+            width = texture.getWidth();
+            height = texture.getHeight();
         }
         else if (type == AMMO)
         {
-            img = ImageIO.read(new File("DoomHealthBonus.jpeg"));
-            width = img.getWidth();
-            height = img.getHeight();
+            texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
+            width = texture.getWidth();
+            height = texture.getHeight();
         }
         else
         {
-            img = ImageIO.read(new File("DoomHealthBonus.jpeg"));
-            width = img.getWidth();
-            height = img.getHeight();
+            texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
+            width = texture.getWidth();
+            height = texture.getHeight();
         }
 
+    }
 
+    @Override
+    public Point getPosition() {
+        return position;
+    }
 
-
+    @Override
+    public BufferedImage getTexture() {
+        return texture;
     }
 }

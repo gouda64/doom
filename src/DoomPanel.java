@@ -53,6 +53,8 @@ public class DoomPanel extends JPanel {
         g.drawString("Inventory", 680, 590);
         g.drawString("Armor", 1010, 590);
 
+        drawPanel(g);
+
 
     }
     public void draw(Graphics g) {
@@ -66,7 +68,37 @@ public class DoomPanel extends JPanel {
     }
 
     public void drawPanel(Graphics g){
-        g.setColor(Color.BLACK);
+        g.setColor(Color.RED);
+        String health = Integer.toString(game.getPlayer().getHealth());
+        String ammo = Integer.toString(game.getPlayer().getAmmo());
+        String armor = Integer.toString(game.getPlayer().getArmor());
+        Font stringFont = new Font( "Monospaced", Font.BOLD, 45 );
+        g.setFont(stringFont);
+        g.drawString(health + "%",400 + (3-health.length())*15,550);
+        g.drawString(armor + "%",995 + (3-armor.length())*15,550);
+        g.drawString(ammo,100 + (3-ammo.length())*15,550);
+        int inventory = game.getPlayer().getInventorySize();
+        int mult = 0;
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setStroke(new BasicStroke(3));
+
+        while (inventory>0)
+        {
+            g2.drawRect(606 + mult*49, 515,45, 45);
+            g2.drawString(Integer.toString(mult+1), 615 + mult*49, 555);
+            mult ++;
+            inventory--;
+        }
+        int remaining = 6-game.getPlayer().getInventorySize();
+        g2.setColor(Color.BLACK);
+        while (remaining>0)
+        {
+            g2.drawRect(606 + mult*49, 515,45, 45);
+            g2.drawString(Integer.toString(mult+1), 615 + mult*49, 555);
+            mult ++;
+            remaining--;
+        }
+
 
     }
 

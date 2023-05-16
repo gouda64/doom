@@ -58,7 +58,7 @@ public class Player {
 
     public void pickUpAmmo()
     {
-        ammo++;
+        ammo+=10;
     }
 
     public void pickUpArmor()

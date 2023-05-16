@@ -13,15 +13,15 @@ public class Camera {
     private Point lookDir;
     private double yaw;
 
-    public Camera(int width, int height, String mapFile) {
+    public Camera(int width, int height, String mapFile, Point startPos, Point startLook) {
         this.width = width;
         this.height = height;
 
         fov = 90;
         projectionMatrix = matProjection(fov,(double) this.height/this.width, 0.5, 1000);
 
-        camera = new Point(0, 0, 0);
-        lookDir = new Point(0, 0, 1);
+        camera = startPos;
+        lookDir = startLook;
         yaw = 0;
 
 //        List<Triangle> testTri = new ArrayList<>();

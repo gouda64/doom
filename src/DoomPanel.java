@@ -1,9 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
 import graphics.Camera;
-import graphics.Rasterizer;
+import graphics.Point;
 import graphics.Triangle;
 
 public class DoomPanel extends JPanel implements ActionListener {
@@ -36,7 +37,8 @@ public class DoomPanel extends JPanel implements ActionListener {
         mouseY = 0;
         firstMove = true;
 
-        camera = new Camera(WIDTH, HEIGHT, "./src/graphics/test-cube.txt");
+        camera = new Camera(WIDTH, HEIGHT, "./src/graphics/Doom_E1M1.txt",
+                            new Point(-3500, 100, -3000), new Point(0, 0, 1));
     }
 
     public void paintComponent(Graphics g) {
@@ -65,9 +67,11 @@ public class DoomPanel extends JPanel implements ActionListener {
     public void draw(Graphics g) {
         for (Triangle t : camera.view()) {
             //g.setColor(t.c);
-            Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
+            //Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
             g.setColor(Color.WHITE);
             drawTriangle(g, t);
+            g.setColor(Color.BLACK);
+            fillTriangle(g, t);
         }
 
     }
@@ -112,6 +116,12 @@ public class DoomPanel extends JPanel implements ActionListener {
         g.drawLine(WIDTH-(int) t.pts[0].x, HEIGHT-(int) t.pts[0].y, WIDTH-(int) t.pts[2].x, HEIGHT-(int) t.pts[2].y);
         g.drawLine(WIDTH-(int) t.pts[2].x, HEIGHT-(int) t.pts[2].y, WIDTH-(int) t.pts[1].x, HEIGHT-(int) t.pts[1].y);
     }
+    public void fillTriangle(Graphics g, Triangle t) {
+        int[] x = {WIDTH-(int) t.pts[0].x, WIDTH-(int) t.pts[1].x, WIDTH-(int) t.pts[2].x};
+        int[] y = {HEIGHT-(int) t.pts[0].y, HEIGHT-(int) t.pts[1].y, HEIGHT-(int) t.pts[2].y};
+        Polygon p = new Polygon(x, y, 3);
+        g.fillPolygon(p);
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -123,7 +133,7 @@ public class DoomPanel extends JPanel implements ActionListener {
     public class GKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            final double movement = 0.3;
+            final double movement = 100;
             final double rotation = 0.2;
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_SPACE -> camera.moveY(movement);

@@ -162,7 +162,7 @@ public class Camera {
         pNormal = pNormal.normalize();
         double[] dists = new double[3];
         for (int i = 0; i < 3; i++) {
-            Point temp = t.pts[i];//.normalize();
+            Point temp = t.pts[i];
             dists[i] = pNormal.dotProduct(temp) - pNormal.dotProduct(pPoint);
         }
 
@@ -184,9 +184,6 @@ public class Camera {
             }
         }
 
-//        int i = 1;
-//        if (i == 1) return new Triangle[]{t};
-
         switch (inNum) {
             case 0:
                 return new Triangle[]{};
@@ -202,10 +199,7 @@ public class Camera {
 
                 newT.texPts[0] = insideTex[0];
                 double t1 = (pNormal.dotProduct(pPoint) - inside[0].dotProduct(pNormal)) /
-                        (outside[0].dotProduct(pNormal) - inside[0].dotProduct(pNormal)); //same thing as inside pIP
-//                if (Double.isNaN(t1)) {
-//                    System.out.println("no! " + Arrays.toString(t.pts));
-//                }
+                        (outside[0].dotProduct(pNormal) - inside[0].dotProduct(pNormal));
 
                 newT.texPts[1] = new Point(t1*(outsideTex[0].x - insideTex[0].x) + insideTex[0].x,
                         t1*(outsideTex[0].y - insideTex[0].y) + insideTex[0].y);
@@ -216,8 +210,6 @@ public class Camera {
                         t1*(outsideTex[1].y - insideTex[0].y) + insideTex[0].y);
 
                 newT.c = t.c;
-
-                System.out.println(Arrays.toString(newT.texPts));
 
                 return new Triangle[]{newT};
             default: //quad case
@@ -250,9 +242,6 @@ public class Camera {
                         t1*(outsideTex[0].y - insideTex[1].y) + insideTex[1].y);
 
                 newT1.c = t.c; newT2.c = t.c;
-
-                System.out.println(Arrays.toString(newT1.texPts));
-                System.out.println(Arrays.toString(newT2.texPts));
 
                 return new Triangle[]{newT1, newT2};
         }

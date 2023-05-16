@@ -1,19 +1,25 @@
 import entity.Player;
+import entity.Sprite;
+
+import java.util.List;
 
 public class Game {
 
-    private entity.Player player;
+    private Player player;
+    private List<Sprite> sprites;
 
 
     public Game()
     {
-        player = new entity.Player();
+        player = new Player();
+
     }
 
     public Player getPlayer()
     {
         return player;
     }
+
 
 
 

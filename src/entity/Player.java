@@ -19,7 +19,7 @@ public class Player {
         ammo = 50;
         armor = 0;
         inventory = new Weapon[6];
-        inventory[0] = new Weapon(2);
+        inventory[0] = new Weapon(Weapon.PISTOL);
     }
 
     public void pickUpWeapon(int type)

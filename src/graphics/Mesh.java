@@ -17,7 +17,6 @@ public class Mesh {
     }
 
 
-
     public List<Triangle> getAllTris() {
         List<Triangle> allTs = new ArrayList<>();
         allTs.addAll(tris);

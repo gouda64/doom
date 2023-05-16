@@ -16,6 +16,8 @@ public class DoomPanel extends JPanel {
     private int mouseY;
     private boolean firstMove;
 
+    private Game game;
+
     public DoomPanel() {
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setLayout(null);
@@ -23,6 +25,8 @@ public class DoomPanel extends JPanel {
         this.setFocusable(true);
         this.addKeyListener(new GKeyAdapter());
         this.addMouseMotionListener(new GMouseAdapter());
+
+        game = new Game();
 
 
         mouseX = 0;
@@ -39,15 +43,16 @@ public class DoomPanel extends JPanel {
         g.drawRect(0, 500,1200, 600);
         g.fillRect(0, 500,1200, 600);
         g.setColor(Color.BLACK);
-        Font stringFont = new Font( "Serif", Font.PLAIN, 25 );
+        Font stringFont = new Font( "Monospaced", Font.PLAIN, 25 );
         g.setFont(stringFont);
-        g.drawString("Ammo", 80, 590);
-        g.drawLine(240,500,240,600);
-        g.drawLine(480,500,480,600);
-        g.drawLine(720,500,720,600);
-        g.drawLine(960,500,960,600);
-        g.drawLine(1200,500,1200,600);
-        g.drawString("Health", 320, 590);
+        g.drawString("Ammo", 110, 590);
+        g.drawLine(300,500,300,600);
+        g.drawLine(600,500,600,600);
+        g.drawLine(900,500,900,600);
+        g.drawString("Health", 407, 590);
+        g.drawString("Inventory", 680, 590);
+        g.drawString("Armor", 1010, 590);
+
 
     }
     public void draw(Graphics g) {
@@ -57,6 +62,12 @@ public class DoomPanel extends JPanel {
             g.setColor(Color.WHITE);
             drawTriangle(g, t);
         }
+
+    }
+
+    public void drawPanel(Graphics g){
+        g.setColor(Color.BLACK);
+
     }
 
     public static void drawTriangle(Graphics g, Triangle t) {

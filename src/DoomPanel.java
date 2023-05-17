@@ -38,7 +38,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         firstMove = true;
 
         camera = new Camera(WIDTH, HEIGHT, "./src/graphics/Doom_E1M1.txt",
-                            new Point(-3500, 100, -3000), new Point(0, 0, 1));
+                            new Point(-3500, 100, -3000), new Point(0, 0, 1), 700);
     }
 
     public void paintComponent(Graphics g) {
@@ -62,11 +62,10 @@ public class DoomPanel extends JPanel implements ActionListener {
     }
     public void draw(Graphics g) {
         for (Triangle t : camera.view()) {
-            //g.setColor(t.c);
             //Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
             g.setColor(Color.WHITE);
             drawTriangle(g, t);
-            g.setColor(Color.BLACK);
+            g.setColor(t.c);
             fillTriangle(g, t);
         }
 
@@ -110,8 +109,8 @@ public class DoomPanel extends JPanel implements ActionListener {
                 case KeyEvent.VK_S -> camera.moveForBack(-movement);
                 case KeyEvent.VK_LEFT -> camera.turnRightLeft(-rotation);
                 case KeyEvent.VK_RIGHT -> camera.turnRightLeft(rotation);
-                //case KeyEvent.VK_UP -> camera.turnUpDown(rotation);
-                //case KeyEvent.VK_DOWN -> camera.turnUpDown(-rotation);
+                case KeyEvent.VK_UP -> camera.moveForBackLimited(movement);//camera.turnUpDown(rotation);
+                case KeyEvent.VK_DOWN -> camera.moveForBackLimited(-movement);//camera.turnUpDown(-rotation);
             }
             repaint();
         }

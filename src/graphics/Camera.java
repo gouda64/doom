@@ -1,9 +1,11 @@
 package graphics;
 
+import java.awt.*;
 import java.util.*;
 import java.util.List;
 
 public class Camera {
+    private final int renderDist;
     private final int width;
     private final int height;
     private final double fov;
@@ -13,9 +15,11 @@ public class Camera {
     private Point lookDir;
     private double yaw;
 
-    public Camera(int width, int height, String mapFile, Point startPos, Point startLook) {
+    public Camera(int width, int height, String mapFile, Point startPos, Point startLook, int renderDist) {
         this.width = width;
         this.height = height;
+
+        this.renderDist = renderDist;
 
         fov = 90;
         projectionMatrix = matProjection(fov,(double) this.height/this.width, 0.5, 1000);
@@ -45,7 +49,7 @@ public class Camera {
 
         double[][] camMat = pointAt(camera, camera.add(lookDir), new Point(0, 1, 0))[1];
         List<Triangle> trisToDraw = cullAndProject(worldMat, camMat);
-        sortByAvgZ(trisToDraw);
+        sortByZ(trisToDraw);
 
         List<Triangle> view = new ArrayList<>();
         for (Triangle t : trisToDraw) {
@@ -59,6 +63,14 @@ public class Camera {
         List<Triangle> trisToDraw = new ArrayList<>();
 
         for (Triangle t : mesh.getAllTris()) {
+            if (renderDist != -1) {
+                boolean canBreak = true;
+                for (Point p : t.pts) {
+                    if (camera.sub(p).length() < renderDist) canBreak = false;
+                }
+                if (canBreak) continue;
+            }
+
             Triangle tTransformed = transformTriByMat(t, worldMat);
 
             Point normal, line1, line2;
@@ -67,12 +79,23 @@ public class Camera {
             normal = line1.crossProduct(line2).normalize();
 
             if (normal.dotProduct(tTransformed.pts[0].sub(camera)) < 0) {
+                //Point lightDirection = new Point(0, 0, -
+                double dp = 0;
+                if (renderDist != -1) {
+                    dp = Math.max(0, 1 - Math.min((camera.sub(tTransformed.pts[0]
+                                .add(tTransformed.pts[1]).add(tTransformed.pts[2]).mult(1.0/3))
+                                .length())/(5.0/4*renderDist), 0.95));
+                }
+                Color c = new Color((float) dp, (float) dp, (float) dp);
+
                 Triangle tView = transformTriByMat(tTransformed, camMat);
 
                 Triangle[] clippedTris = triClipToPlane(new Point(0, 0, 0.1), new Point(0, 0, 1), tView);
                 for (Triangle tri : clippedTris) {
 
                     Triangle tProjected = transformTriByMat(tri, projectionMatrix);
+
+                    tProjected.c = c;
 
                     Point addP = new Point(1, 1, 0);
                     for (int i = 0; i < tProjected.pts.length; i++) {
@@ -120,10 +143,10 @@ public class Camera {
         return clippedTris;
     }
 
-    private void sortByAvgZ(List<Triangle> tris) {
+    private void sortByZ(List<Triangle> tris) {
         Comparator<Triangle> compareByZ = (t1, t2) -> {
-            double z1 = t1.avgZ();
-            double z2 = t2.avgZ();
+            double z1 = Math.max(t1.pts[0].z, Math.max(t1.pts[1].z, t1.pts[2].z));//t1.avgZ();
+            double z2 = Math.max(t2.pts[0].z, Math.max(t2.pts[1].z, t2.pts[2].z));;//t2.avgZ();
             if (z1-z2 < 0) {
                 return 1;
             }
@@ -150,7 +173,7 @@ public class Camera {
         return projMat;
     }
 
-    private static Point pointIntersectPlane(Point pPoint, Point pNormal, Point lStart, Point lEnd) {
+    private static Point vectorIntersectPlane(Point pPoint, Point pNormal, Point lStart, Point lEnd) {
         pNormal = pNormal.normalize();
         double t = (pNormal.dotProduct(pPoint) - lStart.dotProduct(pNormal)) /
                 (lEnd.dotProduct(pNormal) - lStart.dotProduct(pNormal));
@@ -194,8 +217,8 @@ public class Camera {
                 newT.texFile = t.texFile;
 
                 newT.pts[0] = inside[0];
-                newT.pts[1] = pointIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
-                newT.pts[2] = pointIntersectPlane(pPoint, pNormal, inside[0], outside[1]);
+                newT.pts[1] = vectorIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
+                newT.pts[2] = vectorIntersectPlane(pPoint, pNormal, inside[0], outside[1]);
 
                 newT.texPts[0] = insideTex[0];
                 double t1 = (pNormal.dotProduct(pPoint) - inside[0].dotProduct(pNormal)) /
@@ -221,7 +244,7 @@ public class Camera {
 
                 newT1.pts[0] = inside[0];
                 newT1.pts[1] = inside[1];
-                newT1.pts[2] = pointIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
+                newT1.pts[2] = vectorIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
 
                 newT1.texPts[0] = insideTex[0];
                 newT1.texPts[1] = insideTex[1];
@@ -232,7 +255,7 @@ public class Camera {
 
                 newT2.pts[0] = inside[1];
                 newT2.pts[1] = newT1.pts[2];
-                newT2.pts[2] = pointIntersectPlane(pPoint, pNormal, inside[1], outside[0]);
+                newT2.pts[2] = vectorIntersectPlane(pPoint, pNormal, inside[1], outside[0]);
 
                 newT2.texPts[0] = insideTex[1];
                 newT2.texPts[1] = newT1.texPts[2];
@@ -274,8 +297,32 @@ public class Camera {
     public void moveForBack(double amt) {
         camera = camera.add(new Point(lookDir.x, 0, lookDir.z).mult(amt));
     }
+    public void moveForBackLimited(double amt) {
+        Point moveVec = new Point(lookDir.x, 0, lookDir.z).mult(amt);
+        for (Triangle t : mesh.getAllTris()) {
+            Point pNormal = t.pts[0].sub(t.pts[1]).crossProduct(t.pts[1].sub(t.pts[2]));
+            Point intersect = vectorIntersectPlane(t.pts[0], pNormal, camera, camera.add(moveVec));
+            if (intersect.sub(camera).length() < moveVec.sub(camera).length()) {
+                camera = intersect;
+                return;
+            }
+        }
+        camera = camera.add(moveVec);
+    }
     public void moveRightLeft(double amt) {
         camera = camera.add(lookDir.crossProduct(new Point(0, 1, 0)).mult(amt));
+    }
+    public void moveRightLeftLimited(double amt) {
+        Point moveVec = lookDir.crossProduct(new Point(0, 1, 0)).mult(amt);
+        for (Triangle t : mesh.getAllTris()) {
+            Point pNormal = t.pts[0].sub(t.pts[1]).crossProduct(t.pts[1].sub(t.pts[2]));
+            Point intersect = vectorIntersectPlane(t.pts[0], pNormal, camera, camera.add(moveVec));
+            if (intersect.sub(camera).length() < moveVec.sub(camera).length()) {
+                camera = intersect;
+                return;
+            }
+        }
+        camera = camera.add(moveVec);
     }
     public void turnRightLeft(double amt) {
         yaw += amt;

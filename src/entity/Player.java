@@ -5,6 +5,7 @@ public class Player {
     private int ammo;
     private int armor;
     private Weapon[] inventory;
+    private Weapon equipped;
 
     private static final int PISTOL = 2;
     private static final int SHOTGUN = 3;
@@ -20,6 +21,7 @@ public class Player {
         armor = 0;
         inventory = new Weapon[6];
         inventory[0] = new Weapon(Weapon.PISTOL);
+        equipped = inventory[0];
     }
 
     public void pickUpWeapon(int type)
@@ -54,11 +56,12 @@ public class Player {
     public int getHealth(){return health;}
     public int getAmmo(){return ammo;}
     public int getArmor(){return armor;}
+    public Weapon getEquipped(){return equipped;}
 
 
     public void pickUpAmmo()
     {
-        ammo++;
+        ammo+=10;
     }
 
     public void pickUpArmor()

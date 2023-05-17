@@ -38,7 +38,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         firstMove = true;
 
         camera = new Camera(WIDTH, HEIGHT, "./src/graphics/Doom_E1M1.txt",
-                            new Point(-3500, 100, -3000), new Point(0, 0, 1), 700);
+                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
     }
 
     public void paintComponent(Graphics g) {
@@ -130,21 +130,21 @@ public class DoomPanel extends JPanel implements ActionListener {
     }
 
     public class GKeyAdapter extends KeyAdapter {
+        final double movement = 100;
+        final double rotation = 0.2;
         @Override
         public void keyPressed(KeyEvent e) {
-            final double movement = 100;
-            final double rotation = 0.2;
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_SPACE -> camera.moveY(movement);
                 case KeyEvent.VK_SHIFT -> camera.moveY(-movement);
-                case KeyEvent.VK_D -> camera.moveRightLeft(movement);
-                case KeyEvent.VK_A -> camera.moveRightLeft(-movement);
-                case KeyEvent.VK_W -> camera.moveForBack(movement);
-                case KeyEvent.VK_S -> camera.moveForBack(-movement);
+                case KeyEvent.VK_D -> camera.moveRightLeftLimited(movement);//camera.moveRightLeft(movement);
+                case KeyEvent.VK_A -> camera.moveRightLeftLimited(-movement);//camera.moveRightLeft(-movement);
+                case KeyEvent.VK_W -> camera.moveForBackLimited(movement);//camera.moveForBack(movement);
+                case KeyEvent.VK_S -> camera.moveForBackLimited(-movement);//camera.moveForBack(-movement);
                 case KeyEvent.VK_LEFT -> camera.turnRightLeft(-rotation);
                 case KeyEvent.VK_RIGHT -> camera.turnRightLeft(rotation);
-                case KeyEvent.VK_UP -> camera.moveForBackLimited(movement);//camera.turnUpDown(rotation);
-                case KeyEvent.VK_DOWN -> camera.moveForBackLimited(-movement);//camera.turnUpDown(-rotation);
+                //case KeyEvent.VK_UP -> camera.turnUpDown(rotation);
+                //case KeyEvent.VK_DOWN -> camera.turnUpDown(-rotation);
             }
             repaint();
         }
@@ -159,7 +159,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         public void mouseMoved(MouseEvent e) {
             if (!firstMove) {
                 //camera.turnUpDown(-0.005*(e.getYOnScreen() - mouseY));
-                camera.turnRightLeft(.005*(e.getXOnScreen() - mouseX));
+                camera.turnRightLeft(.03*(e.getXOnScreen() - mouseX));
             }
             else {
                 firstMove = false;

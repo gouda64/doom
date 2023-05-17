@@ -291,6 +291,52 @@ public class Camera {
         return new double[][][] {mat, inverseMat};
     }
 
+    public Triangle lookingAt(double epsilon) {
+        Triangle looking = null;
+        double minT = Double.MAX_VALUE;
+        for (Triangle tri : mesh.getAllTris()) {
+            Point h = lookDir.crossProduct(tri.pts[2].sub(tri.pts[0]));
+            Point q = camera.sub(tri.pts[0]).crossProduct(tri.pts[1].sub(tri.pts[0]));
+
+            double a = tri.pts[1].sub(tri.pts[0]).dotProduct(h);
+            if (a > -epsilon && a < epsilon) continue;
+            double u = 1/a * camera.sub(tri.pts[0]).dotProduct(h);
+            if (u < 0 || u > 1) continue;
+            double v = 1/a * lookDir.dotProduct(q);
+            if (v < 0 || u + v > 1) continue;
+
+            double t = 1/a * tri.pts[2].sub(tri.pts[0]).dotProduct(q);
+            if (t < epsilon) continue;
+            if (t < minT) {
+                minT = t;
+                looking = tri;
+            }
+        }
+        return looking;
+    } //might need for shooting
+    private double lookingDist(Point rayO, Point rayDir) {
+        double epsilon = 0.00001; //could make it parameter but prob unnecessary
+        double minT = Double.MAX_VALUE;
+        for (Triangle tri : mesh.getAllTris()) {
+            Point h = rayDir.crossProduct(tri.pts[2].sub(tri.pts[0]));
+            Point q = rayO.sub(tri.pts[0]).crossProduct(tri.pts[1].sub(tri.pts[0]));
+
+            double a = tri.pts[1].sub(tri.pts[0]).dotProduct(h);
+            if (a > -epsilon && a < epsilon) continue;
+            double u = 1/a * rayO.sub(tri.pts[0]).dotProduct(h);
+            if (u < 0 || u > 1) continue;
+            double v = 1/a * rayDir.dotProduct(q);
+            if (v < 0 || u + v > 1) continue;
+
+            double t = 1/a * tri.pts[2].sub(tri.pts[0]).dotProduct(q);
+            if (t < epsilon) continue;
+            if (t < minT) {
+                minT = t;
+            }
+        }
+        return minT;
+    }
+
     public void moveY(double amt) {
         camera.y += amt;
     }
@@ -299,14 +345,8 @@ public class Camera {
     }
     public void moveForBackLimited(double amt) {
         Point moveVec = new Point(lookDir.x, 0, lookDir.z).mult(amt);
-        for (Triangle t : mesh.getAllTris()) {
-            Point pNormal = t.pts[0].sub(t.pts[1]).crossProduct(t.pts[1].sub(t.pts[2]));
-            Point intersect = vectorIntersectPlane(t.pts[0], pNormal, camera, camera.add(moveVec));
-            if (intersect.sub(camera).length() < moveVec.sub(camera).length()) {
-                camera = intersect;
-                return;
-            }
-        }
+        double lookingDist = lookingDist(camera, moveVec);
+        if (lookingDist < 1) return;
         camera = camera.add(moveVec);
     }
     public void moveRightLeft(double amt) {
@@ -314,14 +354,8 @@ public class Camera {
     }
     public void moveRightLeftLimited(double amt) {
         Point moveVec = lookDir.crossProduct(new Point(0, 1, 0)).mult(amt);
-        for (Triangle t : mesh.getAllTris()) {
-            Point pNormal = t.pts[0].sub(t.pts[1]).crossProduct(t.pts[1].sub(t.pts[2]));
-            Point intersect = vectorIntersectPlane(t.pts[0], pNormal, camera, camera.add(moveVec));
-            if (intersect.sub(camera).length() < moveVec.sub(camera).length()) {
-                camera = intersect;
-                return;
-            }
-        }
+        double lookingDist = lookingDist(camera, moveVec);
+        if (lookingDist < 1) return;
         camera = camera.add(moveVec);
     }
     public void turnRightLeft(double amt) {

@@ -9,10 +9,8 @@ import java.lang.Math;
 public class Weapon implements Sprite {
      static final int PISTOL = 2;
      static final int SHOTGUN = 3;
-     static final int CHAINGUN = 4;
-     static final int ROCKETLAUNCHER = 5;
-     static final int PLASMAGUN = 6;
-     static final int BFG9000 = 7;
+     static final int PLASMAGUN = 4;
+     static final int BFG9000 = 5;
 
     private Point position;
     private BufferedImage texture;
@@ -35,24 +33,14 @@ public class Weapon implements Sprite {
                 deviation = 35;
                 fireDelay = 967;
             }
-            case CHAINGUN -> {
-                meanDamage = 10;
-                deviation = 5;
-                fireDelay = 8833;
-            }
-            case ROCKETLAUNCHER -> {
-                meanDamage = 218;
-                deviation = 80;
-                fireDelay = 1767;
-            }
             case PLASMAGUN -> {
-                meanDamage = 25;
-                deviation = 20;
-                fireDelay = 11667;
+                meanDamage = 250;
+                deviation = 200;
+                fireDelay = 2500;
             }
             case BFG9000 -> {
-                meanDamage = 3130;
-                deviation = 1070;
+                meanDamage = 313;
+                deviation = 107;
                 fireDelay = 933;
             }
         }
@@ -72,24 +60,14 @@ public class Weapon implements Sprite {
                 deviation = 35;
                 fireDelay = 967;
             }
-            case CHAINGUN -> {
-                meanDamage = 10;
-                deviation = 5;
-                fireDelay = 8833;
-            }
-            case ROCKETLAUNCHER -> {
-                meanDamage = 218;
-                deviation = 80;
-                fireDelay = 1767;
-            }
             case PLASMAGUN -> {
-                meanDamage = 25;
-                deviation = 20;
-                fireDelay = 11667;
+                meanDamage = 250;
+                deviation = 200;
+                fireDelay = 2500;
             }
             case BFG9000 -> {
-                meanDamage = 3130;
-                deviation = 1070;
+                meanDamage = 313;
+                deviation = 107;
                 fireDelay = 933;
             }
         }

@@ -9,10 +9,8 @@ public class Player {
 
     private static final int PISTOL = 2;
     private static final int SHOTGUN = 3;
-    private static final int CHAINGUN = 4;
-    private static final int ROCKETLAUNCHER = 5;
-    private static final int PLASMAGUN = 6;
-    private static final int BFG9000 = 7;
+    private static final int PLASMAGUN = 4;
+    private static final int BFG9000 = 5;
 
     public Player()
     {
@@ -66,7 +64,7 @@ public class Player {
 
     public void pickUpArmor()
     {
-        armor++;
+        armor+=10;
     }
 
     public void damage(int HP)

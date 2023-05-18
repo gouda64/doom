@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
-import entity.Monster;
 import graphics.Triangle;
 import map_stuff.DoomLevel;
 
@@ -154,13 +153,20 @@ public class DoomPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (!active) return;
+
         //update game here
-        level.step();
-        if (level.gameState() == 1) {
+        if (level.getGameState() == 1) {
+            System.out.println("won!");
+            active = false;
             //win
         }
-        else if (level.gameState() == -1) {
+        else if (level.getGameState() == -1) {
+            active = false;
             //lose
+        }
+        else {
+            level.step();
         }
 
         repaint();
@@ -175,10 +181,10 @@ public class DoomPanel extends JPanel implements ActionListener {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE -> level.camera.moveY(movement);
                     case KeyEvent.VK_SHIFT -> level.camera.moveY(-movement);
-                    case KeyEvent.VK_D -> level.camera.moveRightLeftLimited(movement);//level.camera.moveRightLeft(movement);
-                    case KeyEvent.VK_A -> level.camera.moveRightLeftLimited(-movement);//level.camera.moveRightLeft(-movement);
-                    case KeyEvent.VK_W -> level.camera.moveForBackLimited(movement);//level.camera.moveForBack(movement);
-                    case KeyEvent.VK_S -> level.camera.moveForBackLimited(-movement);//level.camera.moveForBack(-movement);
+                    case KeyEvent.VK_D -> level.strafe(movement);//level.camera.moveRightLeft(movement);
+                    case KeyEvent.VK_A -> level.strafe(-movement);//level.camera.moveRightLeft(-movement);
+                    case KeyEvent.VK_W -> level.walk(movement);//level.camera.moveForBack(movement);
+                    case KeyEvent.VK_S -> level.walk(-movement);//level.camera.moveForBack(-movement);
                     case KeyEvent.VK_LEFT -> level.camera.turnRightLeft(-rotation);
                     case KeyEvent.VK_RIGHT -> level.camera.turnRightLeft(rotation);
                     case KeyEvent.VK_CONTROL -> level.shoot();

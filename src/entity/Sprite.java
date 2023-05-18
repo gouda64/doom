@@ -10,4 +10,5 @@ public interface Sprite {
     public BufferedImage getTexture();
     public double getHeightPropToCeiling();
     public double getWidthPropToHeight();
+    public Point getLook();
 }

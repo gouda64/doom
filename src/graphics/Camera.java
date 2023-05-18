@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.List;
 
 public class Camera {
-    private final int renderDist;
+    private final double renderDist;
     private final int width;
     private final int height;
     private final double fov;
@@ -36,6 +36,21 @@ public class Camera {
         mesh = new Mesh(new ArrayList<>());
         mesh.readObj(mapFile);
     }
+    public Camera(int width, int height, Point startPos, Point startLook, double renderDist) {
+        this.width = width;
+        this.height = height;
+
+        this.renderDist = renderDist;
+
+        fov = 90;
+        projectionMatrix = matProjection(fov,(double) this.height/this.width, 0.5, 1000);
+
+        camera = startPos;
+        lookDir = startLook;
+        yaw = 0;
+
+        mesh = new Mesh(new ArrayList<>());
+    }
 
     public Mesh getMesh() {
         return mesh;
@@ -62,7 +77,7 @@ public class Camera {
     private List<Triangle> cullAndProject(double[][] worldMat, double[][] camMat) {
         List<Triangle> trisToDraw = new ArrayList<>();
 
-        for (Triangle t : mesh.getAllTris()) {
+        for (Triangle t : mesh.tris) {
             if (renderDist != -1) {
                 boolean canBreak = true;
                 for (Point p : t.pts) {
@@ -159,7 +174,7 @@ public class Camera {
     }
     private Triangle transformTriByMat(Triangle t, double[][] mat) {
         return new Triangle(Matrix.multiplyVecMat(t.pts[0], mat), //TODO: see if transfer method is fine
-                Matrix.multiplyVecMat(t.pts[1], mat), Matrix.multiplyVecMat(t.pts[2], mat), t.texPts, t.texFile);
+                Matrix.multiplyVecMat(t.pts[1], mat), Matrix.multiplyVecMat(t.pts[2], mat), t.texPts, t.texture);
     }
 
     private static double[][] matProjection(double fovDeg, double aspectRatio, double zNear, double zFar) {
@@ -214,7 +229,7 @@ public class Camera {
                 return new Triangle[]{t};
             case 1:
                 Triangle newT = new Triangle(null, null, null);
-                newT.texFile = t.texFile;
+                newT.texture = t.texture;
 
                 newT.pts[0] = inside[0];
                 newT.pts[1] = vectorIntersectPlane(pPoint, pNormal, inside[0], outside[0]);
@@ -239,8 +254,8 @@ public class Camera {
                 Triangle newT1 = new Triangle(null, null, null);
                 Triangle newT2 = new Triangle(null, null, null);
 
-                newT1.texFile = t.texFile;
-                newT2.texFile = t.texFile;
+                newT1.texture = t.texture;
+                newT2.texture = t.texture;
 
                 newT1.pts[0] = inside[0];
                 newT1.pts[1] = inside[1];
@@ -294,7 +309,7 @@ public class Camera {
     public Triangle lookingAt(double epsilon) {
         Triangle looking = null;
         double minT = Double.MAX_VALUE;
-        for (Triangle tri : mesh.getAllTris()) {
+        for (Triangle tri : mesh.tris) {
             Point h = lookDir.crossProduct(tri.pts[2].sub(tri.pts[0]));
             Point q = camera.sub(tri.pts[0]).crossProduct(tri.pts[1].sub(tri.pts[0]));
 
@@ -317,7 +332,7 @@ public class Camera {
     private double lookingDist(Point rayO, Point rayDir) {
         double epsilon = 0.00001; //could make it parameter but prob unnecessary
         double minT = Double.MAX_VALUE;
-        for (Triangle tri : mesh.getAllTris()) {
+        for (Triangle tri : mesh.tris) {
             Point h = rayDir.crossProduct(tri.pts[2].sub(tri.pts[0]));
             Point q = rayO.sub(tri.pts[0]).crossProduct(tri.pts[1].sub(tri.pts[0]));
 

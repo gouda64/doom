@@ -11,16 +11,6 @@ import java.util.stream.IntStream;
 
 public class Rasterizer {
     public static void drawTexTriangle(Graphics g, Triangle tri, int width, int height) {
-        BufferedImage bi;
-        try {
-            bi = ImageIO.read(new File(tri.texFile)); //TODO: convert to tri stores the bi for efficiency
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("image read failed");
-            return;
-        }
-
         Point[] ptsClone = tri.pts.clone();
         int[] sortedIndices = IntStream.range(0, ptsClone.length)
                 .boxed().sorted(Comparator.comparingDouble(i -> ptsClone[i].y))
@@ -89,9 +79,9 @@ public class Rasterizer {
                         u = (1 - t) * startU + t * endU;
                         v = (1 - t) * startV + t * endV;
 
-                        int finU = Math.max(Math.min((int) (u * bi.getWidth()), bi.getWidth() - 1), 0);
-                        int finV = Math.max(Math.min((int) (v * bi.getHeight()), bi.getHeight() - 1), 0);
-                        int color = bi.getRGB(bi.getWidth()-finU-1, bi.getHeight()-finV-1);
+                        int finU = Math.max(Math.min((int) (u * tri.texture.getWidth()), tri.texture.getWidth() - 1), 0);
+                        int finV = Math.max(Math.min((int) (v * tri.texture.getHeight()), tri.texture.getHeight() - 1), 0);
+                        int color = tri.texture.getRGB(tri.texture.getWidth()-finU-1, tri.texture.getHeight()-finV-1);
                         //bitwise rgb color value
                         Color c = new Color((color & 0xff0000) >> 16, (color & 0xff00) >> 8, color & 0xff);
 

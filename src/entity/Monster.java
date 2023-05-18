@@ -8,6 +8,8 @@ public class Monster implements Sprite {
 
     private Point position;
     private BufferedImage texture;
+    private double widthToHeight;
+    private double height;
 
     private int health;
 
@@ -26,8 +28,9 @@ public class Monster implements Sprite {
     public Monster(int type, Point initPosition)
     {
         position = initPosition;
+
         this.type = type;
-        if (type == ZOMBIEMAN) { //TODO: init textures
+        if (type == ZOMBIEMAN) { //TODO: init textures and dimensions
             health = 20;
             damage = 9;
             fireDelay = 2500;
@@ -80,6 +83,16 @@ public class Monster implements Sprite {
     @Override
     public BufferedImage getTexture() {
         return texture;
+    }
+
+    @Override
+    public double getWidthPropToHeight() {
+        return widthToHeight;
+    }
+
+    @Override
+    public double getHeightPropToCeiling() {
+        return height;
     }
 
 }

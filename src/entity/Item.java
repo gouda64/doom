@@ -13,8 +13,8 @@ public class Item implements Sprite {
     private Point position;
 
     private int type;
-    private int height;
-    private int width;
+    private double height;
+    private double widthToHeight;
 
     private static final int HEALTH = 0;
     private static final int AMMO = 1;
@@ -27,23 +27,24 @@ public class Item implements Sprite {
         position = initPosition;
         this.type = type;
 
+        //TODO: init textures and dimensions (not from texture, prob wouldn't work)
         if (type == HEALTH)
         {
             texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
-            width = texture.getWidth();
-            height = texture.getHeight();
+//            width = texture.getWidth();
+//            height = texture.getHeight();
         }
         else if (type == AMMO)
         {
             texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
-            width = texture.getWidth();
-            height = texture.getHeight();
+//            width = texture.getWidth();
+//            height = texture.getHeight();
         }
         else
         {
             texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
-            width = texture.getWidth();
-            height = texture.getHeight();
+//            width = texture.getWidth();
+//            height = texture.getHeight();
         }
 
     }
@@ -56,5 +57,15 @@ public class Item implements Sprite {
     @Override
     public BufferedImage getTexture() {
         return texture;
+    }
+
+    @Override
+    public double getWidthPropToHeight() {
+        return widthToHeight;
+    }
+
+    @Override
+    public double getHeightPropToCeiling() {
+        return height;
     }
 }

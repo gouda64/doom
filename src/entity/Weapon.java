@@ -16,6 +16,8 @@ public class Weapon implements Sprite {
 
     private Point position;
     private BufferedImage texture;
+    private double widthToHeight;
+    private double height;
 
     private int meanDamage;
     private int deviation;
@@ -57,9 +59,10 @@ public class Weapon implements Sprite {
             }
         }
     }
-    public Weapon(int weaponType, Point initPosition) throws IOException {
-        position = initPosition;
-        //TODO: assign texture based on imgs
+    public Weapon(int weaponType, Point position) throws IOException {
+        this.position = position;
+
+        //TODO: init textures and dimensions
         type = weaponType;
         switch (type) {
             case PISTOL -> {
@@ -108,6 +111,16 @@ public class Weapon implements Sprite {
     @Override
     public BufferedImage getTexture() {
         return texture;
+    }
+
+    @Override
+    public double getWidthPropToHeight() {
+        return widthToHeight;
+    }
+
+    @Override
+    public double getHeightPropToCeiling() {
+        return height;
     }
 
     public int getFireDelay()

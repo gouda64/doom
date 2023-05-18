@@ -18,6 +18,9 @@ public class Triangle {
 
     public Triangle(Point p1, Point p2, Point p3) {
         pts = new Point[]{p1, p2, p3};
+
+        texPts = new Point[]{new Point(0, 0), new Point(0, 1),
+                new Point(1, 0)};
     }
     public Triangle(Point p1, Point p2, Point p3, Point[] texPts, BufferedImage texture) {
         pts = new Point[]{p1, p2, p3};

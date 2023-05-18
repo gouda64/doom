@@ -7,10 +7,22 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class Mesh {
-    public List<Triangle> tris;
+    private List<Triangle> tris;
+    public List<Triangle> tempTris = new ArrayList<>();
 
     public Mesh(List<Triangle> t) {
         tris = t;
+    }
+
+    public List<Triangle> getAllTris() {
+        List<Triangle> allTs = new ArrayList<>();
+        allTs.addAll(tris);
+        allTs.addAll(tempTris);
+        return allTs;
+    }
+
+    public void setTris(List<Triangle> tris) {
+        this.tris = tris;
     }
 
     public boolean readObj(String fileName) {

@@ -1,9 +1,6 @@
 package map_stuff;
 
-import entity.Item;
-import entity.Monster;
-import entity.Sprite;
-import entity.Weapon;
+import entity.*;
 import graphics.Camera;
 import graphics.Point;
 import graphics.Triangle;
@@ -16,24 +13,38 @@ import java.util.List;
 
 public class DoomLevel {
     private List<Triangle> background = new ArrayList<>();
-    public Camera camera;
+    public final Camera camera;
 
     private double mapHeight = 0;
     private final List<Point> vertices = new ArrayList<>();
     private final List<Edge> edges = new ArrayList<>();
-    private final List<Sprite> sprites = new ArrayList<>(); //the non-moving ones
-    private final List<Monster> monsters = new ArrayList<>();
     private Point playerStart;
     private Point playerLook = new Point(0, 0, 1);
     private Edge winEdge;
 
+    private final List<Sprite> sprites = new ArrayList<>(); //the non-moving ones
+    private final List<Monster> monsters = new ArrayList<>();
+    public Player player;
 
-    public DoomLevel(String mapFile, int width, int height, double renderDist) {
+
+    public DoomLevel(String mapFile, int width, int height, double renderDistToHeight, double playerToHeight) {
         readMap(mapFile);
         generateBackground();
+        player = new Player();
 
-        camera = new Camera(width, height, playerStart, playerLook, renderDist);
-        camera.getMesh().tris = background;
+        playerStart = playerStart.add(new Point(0, mapHeight*playerToHeight, 0));
+        camera = new Camera(width, height, playerStart, playerLook, mapHeight*renderDistToHeight);
+        camera.getMesh().setTris(background);
+    }
+
+    public void step() {
+        camera.getMesh().tempTris = generateSprites();
+        //move monsters
+    }
+
+    public int gameState() {
+        if (player.getHealth() == 0) return -1;
+        return 0;
     }
 
     public List<Triangle> generateSprites() {
@@ -45,7 +56,7 @@ public class DoomLevel {
         for (Monster m : monsters) {
 
         }
-        return null;
+        return new ArrayList<>();
     }
 
     public Point getPlayerStart() {

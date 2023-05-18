@@ -1,21 +1,21 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
 
-import graphics.Camera;
-import graphics.Point;
 import graphics.Triangle;
+import map_stuff.DoomLevel;
 
 public class DoomPanel extends JPanel implements ActionListener {
     static final int WIDTH = 1200;
     static final int HEIGHT = 600;
 
-    private final Camera camera;
+    private DoomLevel level;
 
     private int mouseX;
     private int mouseY;
     private boolean firstMove;
+
+    private boolean active;
 
     private Game game;
     private Timer timer;
@@ -37,8 +37,13 @@ public class DoomPanel extends JPanel implements ActionListener {
         mouseY = 0;
         firstMove = true;
 
-        camera = new Camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
-                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
+        active = true;
+
+//        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
+//                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
+
+        level = new DoomLevel("./assets/DoomBasic.txt", WIDTH, HEIGHT, 1, 0.75);
+        System.out.println(level.camera.getMesh().getAllTris());
     }
 
     public void paintComponent(Graphics g) {
@@ -65,7 +70,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 
     }
     public void draw(Graphics g) {
-        for (Triangle t : camera.view()) {
+        for (Triangle t : level.camera.view()) {
             //Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
             g.setColor(Color.WHITE);
             drawTriangle(g, t);
@@ -124,7 +129,15 @@ public class DoomPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        System.out.println(level.camera.getPos());
         //update game here
+        level.step();
+        if (level.gameState() == 1) {
+            //win
+        }
+        else if (level.gameState() == -1) {
+            //lose
+        }
 
         repaint();
     }
@@ -134,19 +147,20 @@ public class DoomPanel extends JPanel implements ActionListener {
         final double rotation = 0.2;
         @Override
         public void keyPressed(KeyEvent e) {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_SPACE -> camera.moveY(movement);
-                case KeyEvent.VK_SHIFT -> camera.moveY(-movement);
-                case KeyEvent.VK_D -> camera.moveRightLeftLimited(movement);//camera.moveRightLeft(movement);
-                case KeyEvent.VK_A -> camera.moveRightLeftLimited(-movement);//camera.moveRightLeft(-movement);
-                case KeyEvent.VK_W -> camera.moveForBackLimited(movement);//camera.moveForBack(movement);
-                case KeyEvent.VK_S -> camera.moveForBackLimited(-movement);//camera.moveForBack(-movement);
-                case KeyEvent.VK_LEFT -> camera.turnRightLeft(-rotation);
-                case KeyEvent.VK_RIGHT -> camera.turnRightLeft(rotation);
-                //case KeyEvent.VK_UP -> camera.turnUpDown(rotation);
-                //case KeyEvent.VK_DOWN -> camera.turnUpDown(-rotation);
+            if (active) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_SPACE -> level.camera.moveY(movement);
+                    case KeyEvent.VK_SHIFT -> level.camera.moveY(-movement);
+                    case KeyEvent.VK_D -> level.camera.moveRightLeftLimited(movement);//level.camera.moveRightLeft(movement);
+                    case KeyEvent.VK_A -> level.camera.moveRightLeftLimited(-movement);//level.camera.moveRightLeft(-movement);
+                    case KeyEvent.VK_W -> level.camera.moveForBackLimited(movement);//level.camera.moveForBack(movement);
+                    case KeyEvent.VK_S -> level.camera.moveForBackLimited(-movement);//level.camera.moveForBack(-movement);
+                    case KeyEvent.VK_LEFT -> level.camera.turnRightLeft(-rotation);
+                    case KeyEvent.VK_RIGHT -> level.camera.turnRightLeft(rotation);
+                    //case KeyEvent.VK_UP -> level.camera.turnUpDown(rotation);
+                    //case KeyEvent.VK_DOWN -> level.camera.turnUpDown(-rotation);
+                }
             }
-            repaint();
         }
         @Override
         public void keyReleased(KeyEvent e) {
@@ -157,17 +171,17 @@ public class DoomPanel extends JPanel implements ActionListener {
     public class GMouseAdapter extends MouseAdapter {
         @Override
         public void mouseMoved(MouseEvent e) {
-            if (!firstMove) {
-                //camera.turnUpDown(-0.005*(e.getYOnScreen() - mouseY));
-                camera.turnRightLeft(.03*(e.getXOnScreen() - mouseX));
-            }
-            else {
-                firstMove = false;
+            if (active) {
+                if (!firstMove) {
+                    //level.camera.turnUpDown(-0.005*(e.getYOnScreen() - mouseY));
+                    level.camera.turnRightLeft(.03*(e.getXOnScreen() - mouseX));
+                }
+                else {
+                    firstMove = false;
+                }
             }
             mouseX = e.getXOnScreen();
             mouseY = e.getYOnScreen();
-
-            repaint();
         }
     }
 }

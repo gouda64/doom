@@ -11,7 +11,7 @@ public class Camera {
     private final double fov;
     private final Mesh mesh;
     private final double[][] projectionMatrix;
-    private Point camera;
+    private Point pos;
     private Point lookDir;
     private double yaw;
 
@@ -24,7 +24,7 @@ public class Camera {
         fov = 90;
         projectionMatrix = matProjection(fov,(double) this.height/this.width, 0.5, 1000);
 
-        camera = startPos;
+        pos = startPos;
         lookDir = startLook;
         yaw = 0;
 
@@ -45,7 +45,7 @@ public class Camera {
         fov = 90;
         projectionMatrix = matProjection(fov,(double) this.height/this.width, 0.5, 1000);
 
-        camera = startPos;
+        pos = startPos;
         lookDir = startLook;
         yaw = 0;
 
@@ -55,6 +55,7 @@ public class Camera {
     public Mesh getMesh() {
         return mesh;
     }
+    public Point getPos() {return pos;}
 
     public List<Triangle> view() {
         //10??
@@ -62,7 +63,7 @@ public class Camera {
 
         lookDir = Matrix.multiplyVecMat(new Point(0, 0, 1), Matrix.rotY(yaw));
 
-        double[][] camMat = pointAt(camera, camera.add(lookDir), new Point(0, 1, 0))[1];
+        double[][] camMat = pointAt(pos, pos.add(lookDir), new Point(0, 1, 0))[1];
         List<Triangle> trisToDraw = cullAndProject(worldMat, camMat);
         sortByZ(trisToDraw);
 
@@ -77,11 +78,11 @@ public class Camera {
     private List<Triangle> cullAndProject(double[][] worldMat, double[][] camMat) {
         List<Triangle> trisToDraw = new ArrayList<>();
 
-        for (Triangle t : mesh.tris) {
+        for (Triangle t : mesh.getAllTris()) {
             if (renderDist != -1) {
                 boolean canBreak = true;
                 for (Point p : t.pts) {
-                    if (camera.sub(p).length() < renderDist) canBreak = false;
+                    if (pos.sub(p).length() < renderDist) canBreak = false;
                 }
                 if (canBreak) continue;
             }
@@ -93,11 +94,11 @@ public class Camera {
             line2 = tTransformed.pts[2].sub(tTransformed.pts[0]);
             normal = line1.crossProduct(line2).normalize();
 
-            if (normal.dotProduct(tTransformed.pts[0].sub(camera)) < 0) {
+            if (normal.dotProduct(tTransformed.pts[0].sub(pos)) < 0) {
                 //Point lightDirection = new Point(0, 0, -
                 double dp = 0;
                 if (renderDist != -1) {
-                    dp = Math.max(0, 1 - Math.min((camera.sub(tTransformed.pts[0]
+                    dp = Math.max(0, 1 - Math.min((pos.sub(tTransformed.pts[0]
                                 .add(tTransformed.pts[1]).add(tTransformed.pts[2]).mult(1.0/3))
                                 .length())/(5.0/4*renderDist), 0.95));
                 }
@@ -309,13 +310,13 @@ public class Camera {
     public Triangle lookingAt(double epsilon) {
         Triangle looking = null;
         double minT = Double.MAX_VALUE;
-        for (Triangle tri : mesh.tris) {
+        for (Triangle tri : mesh.getAllTris()) {
             Point h = lookDir.crossProduct(tri.pts[2].sub(tri.pts[0]));
-            Point q = camera.sub(tri.pts[0]).crossProduct(tri.pts[1].sub(tri.pts[0]));
+            Point q = pos.sub(tri.pts[0]).crossProduct(tri.pts[1].sub(tri.pts[0]));
 
             double a = tri.pts[1].sub(tri.pts[0]).dotProduct(h);
             if (a > -epsilon && a < epsilon) continue;
-            double u = 1/a * camera.sub(tri.pts[0]).dotProduct(h);
+            double u = 1/a * pos.sub(tri.pts[0]).dotProduct(h);
             if (u < 0 || u > 1) continue;
             double v = 1/a * lookDir.dotProduct(q);
             if (v < 0 || u + v > 1) continue;
@@ -332,7 +333,7 @@ public class Camera {
     private double lookingDist(Point rayO, Point rayDir) {
         double epsilon = 0.00001; //could make it parameter but prob unnecessary
         double minT = Double.MAX_VALUE;
-        for (Triangle tri : mesh.tris) {
+        for (Triangle tri : mesh.getAllTris()) {
             Point h = rayDir.crossProduct(tri.pts[2].sub(tri.pts[0]));
             Point q = rayO.sub(tri.pts[0]).crossProduct(tri.pts[1].sub(tri.pts[0]));
 
@@ -353,25 +354,25 @@ public class Camera {
     }
 
     public void moveY(double amt) {
-        camera.y += amt;
+        pos.y += amt;
     }
     public void moveForBack(double amt) {
-        camera = camera.add(new Point(lookDir.x, 0, lookDir.z).mult(amt));
+        pos = pos.add(new Point(lookDir.x, 0, lookDir.z).mult(amt));
     }
     public void moveForBackLimited(double amt) {
         Point moveVec = new Point(lookDir.x, 0, lookDir.z).mult(amt);
-        double lookingDist = lookingDist(camera, moveVec);
+        double lookingDist = lookingDist(pos, moveVec);
         if (lookingDist < 1) return;
-        camera = camera.add(moveVec);
+        pos = pos.add(moveVec);
     }
     public void moveRightLeft(double amt) {
-        camera = camera.add(lookDir.crossProduct(new Point(0, 1, 0)).mult(amt));
+        pos = pos.add(lookDir.crossProduct(new Point(0, 1, 0)).mult(amt));
     }
     public void moveRightLeftLimited(double amt) {
         Point moveVec = lookDir.crossProduct(new Point(0, 1, 0)).mult(amt);
-        double lookingDist = lookingDist(camera, moveVec);
+        double lookingDist = lookingDist(pos, moveVec);
         if (lookingDist < 1) return;
-        camera = camera.add(moveVec);
+        pos = pos.add(moveVec);
     }
     public void turnRightLeft(double amt) {
         yaw += amt;

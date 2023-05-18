@@ -42,19 +42,37 @@ public class DoomLevel {
 
     public void step() {
         camera.getMesh().tempTris = generateSprites();
+        //update timed graphics like shoot
         //move monsters
     }
 
+    public void shoot() {
+        int victim = camera.lookingAt();
+        List<Triangle> tris = camera.getMesh().getAllTris();
+        tris.get(victim).attributes[1] = "SHOT 0";
+        if (victim%2 == 0) {
+            tris.get(victim+1).attributes[1] = "SHOT 0";
+        }
+        else {
+            tris.get(victim-1).attributes[1] = "SHOT 0";
+        }
+        if (tris.get(victim).attributes[0].contains("MONSTER")) {
+            monsters.get(Integer.parseInt(tris.get(victim).attributes[0].substring(8)))
+                    .takeDamage(player.getEquipped().shoot());
+        }
+    }
+
     public int gameState() {
-        if (player.getHealth() == 0) return -1;
+        if (player.getHealth() <= 0) return -1;
         return 0;
     }
 
     public List<Triangle> generateSprites() {
+        //make sure to add attributes
+
         for (Sprite s : sprites) {
             double height = mapHeight*s.getHeightPropToCeiling();
             double width = height*s.getWidthPropToHeight();
-
         }
         for (Monster m : monsters) {
 
@@ -65,29 +83,35 @@ public class DoomLevel {
     public Point getPlayerStart() {
         return playerStart;
     }
-
     public Edge getWinEdge() {
         return winEdge;
+    }
+    public List<Sprite> getSprites() {
+        return sprites;
+    }
+    public List<Monster> getMonsters() {
+        return monsters;
     }
 
     private void generateBackground() {
         background = new ArrayList<>();
         for (Edge e : edges) {
             Triangle t1 = new Triangle(e.v1.mult(scale),
-                    e.v1.add(new Point(0, mapHeight/2, 0)).mult(scale), e.v2.mult(scale));
-            Triangle t2 = new Triangle(e.v1.add(new Point(0, mapHeight/2, 0)).mult(scale),
-                    e.v2.add(new Point(0, mapHeight/2, 0)).mult(scale), e.v2.mult(scale));
-
-            if (e.texFile.equals("")) {
-                background.add(t1);
-                background.add(t2);
-                continue;
+                    e.v1.add(new Point(0, mapHeight, 0)).mult(scale), e.v2.mult(scale));
+            Triangle t2 = new Triangle(e.v1.add(new Point(0, mapHeight, 0)).mult(scale),
+                    e.v2.add(new Point(0, mapHeight, 0)).mult(scale), e.v2.mult(scale));
+            if (!e.texFile.equals("")) {
+                t1 = new Triangle(t1.pts[0], t1.pts[1], t1.pts[2], new Point[]{new Point(1, 0),
+                        new Point(0, 0), new Point(1, 1)}, e.texFile);
+                new Triangle(t2.pts[0], t2.pts[1], t2.pts[2], new Point[]{new Point(0, 0),
+                        new Point(0, 1), new Point(1, 1)}, e.texFile);
             }
 
-            background.add(new Triangle(t1.pts[0], t1.pts[1], t1.pts[2], new Point[]{new Point(1, 0),
-                    new Point(0, 0), new Point(1, 1)}, e.texFile));
-            background.add(new Triangle(t2.pts[0], t2.pts[1], t2.pts[2], new Point[]{new Point(0, 0),
-                    new Point(0, 1), new Point(1, 1)}, e.texFile));
+            t1.attributes[0] = "WALL";
+            t2.attributes[0] = "WALL";
+
+            background.add(t1);
+            background.add(t2);
         }
     }
 

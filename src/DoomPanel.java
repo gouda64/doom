@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 
+import entity.Monster;
 import graphics.Triangle;
 import map_stuff.DoomLevel;
 
@@ -42,13 +44,20 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
-        level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 0.5, 100);
-        System.out.println(level.camera.getMesh().getAllTris());
+        level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 1.5, 100);
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         draw(g);
+
+        g.setColor(Color.WHITE);
+        g.fillRect(WIDTH/2-2, HEIGHT/2-12, 4, 24);
+        g.fillRect(WIDTH/2-12, HEIGHT/2-2, 24, 4);
+//        g.setColor(Color.BLACK);
+//        g.drawRect(WIDTH/2-2, HEIGHT/2-12, 4, 24);
+//        g.drawRect(WIDTH/2-12, HEIGHT/2-2, 24, 4);
+
         g.setColor(new Color (210, 180, 140));
         g.drawRect(0, 500,1200, 600);
         g.fillRect(0, 500,1200, 600);
@@ -70,11 +79,27 @@ public class DoomPanel extends JPanel implements ActionListener {
 
     }
     public void draw(Graphics g) {
-        for (Triangle t : level.camera.view()) {
+        List<Triangle> view = level.camera.view();
+        for (int i = 0; i < view.size(); i++) {
+            Triangle t = view.get(i);
             //Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
-            g.setColor(Color.WHITE);
-            drawTriangle(g, t);
+            //g.setColor(Color.WHITE);
+
             g.setColor(t.c);
+
+            if (t.attributes[1].contains("SHOT")) {
+                int num = Integer.parseInt(t.attributes[1].substring(5));
+                double max = 0.25 * timer.getDelay() * 3.6;
+                //TODO: move to step (not that important anyways)
+                if (num > max) {
+                    t.attributes[1] = "";
+                } else if (i == 0 || t.attributes != view.get(i-1).attributes) {
+                    t.attributes[1] = "SHOT " + (num + 1);
+                }
+
+                g.setColor(new Color((int) Math.min(255, t.c.getRed() + max - Math.abs(max / 2 - num)),
+                        t.c.getGreen(), t.c.getBlue()));
+            }
             fillTriangle(g, t);
         }
 
@@ -156,6 +181,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                     case KeyEvent.VK_S -> level.camera.moveForBackLimited(-movement);//level.camera.moveForBack(-movement);
                     case KeyEvent.VK_LEFT -> level.camera.turnRightLeft(-rotation);
                     case KeyEvent.VK_RIGHT -> level.camera.turnRightLeft(rotation);
+                    case KeyEvent.VK_CONTROL -> level.shoot();
                     //case KeyEvent.VK_UP -> level.camera.turnUpDown(rotation);
                     //case KeyEvent.VK_DOWN -> level.camera.turnUpDown(-rotation);
                 }

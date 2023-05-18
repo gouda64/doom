@@ -56,6 +56,9 @@ public class Camera {
         return mesh;
     }
     public Point getPos() {return pos;}
+    public Point getLookDir() {
+        return lookDir;
+    }
 
     public List<Triangle> view() {
         //10??
@@ -96,11 +99,7 @@ public class Camera {
 
             if (normal.dotProduct(tTransformed.pts[0].sub(pos)) < 0) {
                 //Point lightDirection = new Point(0, 0, -
-                double dp = 0;
-                double dist = Math.abs(pos.sub(tTransformed.pts[0]).dotProduct(normal));
-                if (renderDist != -1) {
-                    dp = Math.max(0, 1 - Math.min(dist/(5.0/4*renderDist), 0.95));
-                }
+                double dp = getLighting(tTransformed, normal);
                 Color c = new Color((float) dp, (float) dp, (float) dp);
 
                 Triangle tView = transformTriByMat(tTransformed, camMat);
@@ -158,6 +157,17 @@ public class Camera {
         return clippedTris;
     }
 
+    private double getLighting(Triangle t, Point normal) {
+        double dp = 0;
+        //double dist = Math.abs(pos.sub(t.pts[0]).dotProduct(normal));
+        if (renderDist != -1) {
+            dp = Math.max(0, 1 - Math.min((pos.sub(t.pts[0]
+                            .add(t.pts[1]).add(t.pts[2]).mult(1.0/3))
+                    .length())/(3.0/2*renderDist), 0.95));
+            //dp = Math.max(0, 1 - Math.min(dist/(5.0/4*renderDist), 0.95));
+        }
+        return dp;
+    }
     private void sortByZ(List<Triangle> tris) {
         Comparator<Triangle> compareByZ = (t1, t2) -> {
             double z1 = Math.max(t1.pts[0].z, Math.max(t1.pts[1].z, t1.pts[2].z));//t1.avgZ();
@@ -173,8 +183,10 @@ public class Camera {
         tris.sort(compareByZ);
     }
     private Triangle transformTriByMat(Triangle t, double[][] mat) {
-        return new Triangle(Matrix.multiplyVecMat(t.pts[0], mat), //TODO: see if transfer method is fine
+        Triangle newT = new Triangle(Matrix.multiplyVecMat(t.pts[0], mat),
                 Matrix.multiplyVecMat(t.pts[1], mat), Matrix.multiplyVecMat(t.pts[2], mat), t.texPts, t.texture);
+        newT.c  = t.c; newT.attributes = t.attributes;
+        return newT;
     }
 
     private static double[][] matProjection(double fovDeg, double aspectRatio, double zNear, double zFar) {
@@ -196,7 +208,6 @@ public class Camera {
     }
 
     private static Triangle[] triClipToPlane(Point pPoint, Point pNormal, Triangle t) {
-        //TODO: doesn't transfer texture, fix + perspective
         pNormal = pNormal.normalize();
         double[] dists = new double[3];
         for (int i = 0; i < 3; i++) {
@@ -248,6 +259,7 @@ public class Camera {
                         t1*(outsideTex[1].y - insideTex[0].y) + insideTex[0].y);
 
                 newT.c = t.c;
+                newT.attributes = t.attributes;
 
                 return new Triangle[]{newT};
             default: //quad case
@@ -280,6 +292,7 @@ public class Camera {
                         t1*(outsideTex[0].y - insideTex[1].y) + insideTex[1].y);
 
                 newT1.c = t.c; newT2.c = t.c;
+                newT1.attributes = t.attributes; newT2.attributes = t.attributes;
 
                 return new Triangle[]{newT1, newT2};
         }
@@ -306,29 +319,32 @@ public class Camera {
         return new double[][][] {mat, inverseMat};
     }
 
-    public Triangle lookingAt(double epsilon) {
-        Triangle looking = null;
+    public int lookingAt() {
+        double epsilon = 0.00001;
+        int looking = 0;
         double minT = Double.MAX_VALUE;
-        for (Triangle tri : mesh.getAllTris()) {
+        List<Triangle> allTris = mesh.getAllTris();
+        for (int i = 0; i < allTris.size(); i++) {
+            Triangle tri = allTris.get(i);
             Point h = lookDir.crossProduct(tri.pts[2].sub(tri.pts[0]));
             Point q = pos.sub(tri.pts[0]).crossProduct(tri.pts[1].sub(tri.pts[0]));
 
             double a = tri.pts[1].sub(tri.pts[0]).dotProduct(h);
             if (a > -epsilon && a < epsilon) continue;
-            double u = 1/a * pos.sub(tri.pts[0]).dotProduct(h);
+            double u = 1 / a * pos.sub(tri.pts[0]).dotProduct(h);
             if (u < 0 || u > 1) continue;
-            double v = 1/a * lookDir.dotProduct(q);
+            double v = 1 / a * lookDir.dotProduct(q);
             if (v < 0 || u + v > 1) continue;
 
-            double t = 1/a * tri.pts[2].sub(tri.pts[0]).dotProduct(q);
+            double t = 1 / a * tri.pts[2].sub(tri.pts[0]).dotProduct(q);
             if (t < epsilon) continue;
             if (t < minT) {
                 minT = t;
-                looking = tri;
+                looking = i;
             }
         }
         return looking;
-    } //might need for shooting
+    }
     private double lookingDist(Point rayO, Point rayDir) {
         double epsilon = 0.00001; //could make it parameter but prob unnecessary
         double minT = Double.MAX_VALUE;

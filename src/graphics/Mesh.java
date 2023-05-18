@@ -7,21 +7,10 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class Mesh {
-    //also convert to list sometime or smth
-    //associate triangles with textures - list with filePath? or BufferedImage reference
-    private ArrayList<Triangle> tris;
-    List<Triangle> tempTris = new ArrayList<>();
+    public List<Triangle> tris;
 
-    public Mesh(ArrayList<Triangle> t) {
+    public Mesh(List<Triangle> t) {
         tris = t;
-    }
-
-
-    public List<Triangle> getAllTris() {
-        List<Triangle> allTs = new ArrayList<>();
-        allTs.addAll(tris);
-        allTs.addAll(tempTris);
-        return allTs;
     }
 
     public boolean readObj(String fileName) {

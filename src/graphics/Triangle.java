@@ -1,25 +1,41 @@
 package graphics;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.Buffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Triangle {
     public Point[] pts;
     public Color c = new Color(0, 0, 0);
     public Point[] texPts;
-    public String texFile;
+    public BufferedImage texture;
+    public List<String> attributes = new ArrayList<>();
 
     public Triangle(Point p1, Point p2, Point p3) {
         pts = new Point[]{p1, p2, p3};
+    }
+    public Triangle(Point p1, Point p2, Point p3, Point[] texPts, BufferedImage texture) {
+        pts = new Point[]{p1, p2, p3};
 
-        texPts = new Point[]{new Point(0, 0), new Point(0, 1),
-                new Point(1, 0)};
-        texFile = "./assets/rickroll.jpg";
+        this.texPts = texPts;
+        this.texture = texture;
     }
     public Triangle(Point p1, Point p2, Point p3, Point[] texPts, String texFile) {
         pts = new Point[]{p1, p2, p3};
 
         this.texPts = texPts;
-        this.texFile = texFile;
+        try {
+            this.texture = ImageIO.read(new File(texFile));
+        }
+        catch (IOException e) {
+            System.out.println("image read failed");
+            e.printStackTrace();
+        }
     }
 
     public double avgZ() {

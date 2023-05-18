@@ -37,7 +37,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         mouseY = 0;
         firstMove = true;
 
-        camera = new Camera(WIDTH, HEIGHT, "./src/graphics/Doom_E1M1.txt",
+        camera = new Camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
                             new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
     }
 

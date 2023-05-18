@@ -16,6 +16,7 @@ public class Weapon implements Sprite {
     private BufferedImage texture;
     private double widthToHeight;
     private double height;
+    private Point look;
 
     private int meanDamage;
     private int deviation;
@@ -100,6 +101,11 @@ public class Weapon implements Sprite {
     public double getHeightPropToCeiling() {
         return height;
     }
+
+    @Override
+    public Point getLook(){return look;}
+
+    public void setLook(Point l){look = l;}
 
     public int getFireDelay()
     {

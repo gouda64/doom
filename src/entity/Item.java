@@ -12,6 +12,8 @@ public class Item implements Sprite {
     private BufferedImage texture;
     private Point position;
 
+    private Point look;
+
     private int type;
     private double height;
     private double widthToHeight;
@@ -48,6 +50,7 @@ public class Item implements Sprite {
         }
 
     }
+    public void setLook(Point l){look = l;}
 
     @Override
     public Point getPosition() {
@@ -68,4 +71,8 @@ public class Item implements Sprite {
     public double getHeightPropToCeiling() {
         return height;
     }
+
+    @Override
+    public Point getLook(){return look;}
+
 }

@@ -42,7 +42,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
-        level = new DoomLevel("./assets/DoomBasic.txt", WIDTH, HEIGHT, 1, 0.75);
+        level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 0.5, 100);
         System.out.println(level.camera.getMesh().getAllTris());
     }
 
@@ -129,7 +129,6 @@ public class DoomPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println(level.camera.getPos());
         //update game here
         level.step();
         if (level.gameState() == 1) {
@@ -143,7 +142,7 @@ public class DoomPanel extends JPanel implements ActionListener {
     }
 
     public class GKeyAdapter extends KeyAdapter {
-        final double movement = 100;
+        final double movement = 50;
         final double rotation = 0.2;
         @Override
         public void keyPressed(KeyEvent e) {

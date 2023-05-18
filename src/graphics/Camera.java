@@ -97,10 +97,9 @@ public class Camera {
             if (normal.dotProduct(tTransformed.pts[0].sub(pos)) < 0) {
                 //Point lightDirection = new Point(0, 0, -
                 double dp = 0;
+                double dist = Math.abs(pos.sub(tTransformed.pts[0]).dotProduct(normal));
                 if (renderDist != -1) {
-                    dp = Math.max(0, 1 - Math.min((pos.sub(tTransformed.pts[0]
-                                .add(tTransformed.pts[1]).add(tTransformed.pts[2]).mult(1.0/3))
-                                .length())/(5.0/4*renderDist), 0.95));
+                    dp = Math.max(0, 1 - Math.min(dist/(5.0/4*renderDist), 0.95));
                 }
                 Color c = new Color((float) dp, (float) dp, (float) dp);
 

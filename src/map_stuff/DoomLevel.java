@@ -16,6 +16,7 @@ public class DoomLevel {
     public final Camera camera;
 
     private double mapHeight = 0;
+    private double scale;
     private final List<Point> vertices = new ArrayList<>();
     private final List<Edge> edges = new ArrayList<>();
     private Point playerStart;
@@ -27,13 +28,15 @@ public class DoomLevel {
     public Player player;
 
 
-    public DoomLevel(String mapFile, int width, int height, double renderDistToHeight, double playerToHeight) {
+    public DoomLevel(String mapFile, int width, int height, double renderDistToHeight, double scale) {//double xScale, double zScale) {
+        this.scale = scale;
+
         readMap(mapFile);
         generateBackground();
         player = new Player();
+        playerStart = new Point(playerStart.x*scale, playerStart.y, playerStart.z*scale);
 
-        playerStart = playerStart.add(new Point(0, mapHeight*playerToHeight, 0));
-        camera = new Camera(width, height, playerStart, playerLook, mapHeight*renderDistToHeight);
+        camera = new Camera(width, height, playerStart, playerLook, scale*mapHeight*renderDistToHeight);
         camera.getMesh().setTris(background);
     }
 
@@ -70,20 +73,24 @@ public class DoomLevel {
     private void generateBackground() {
         background = new ArrayList<>();
         for (Edge e : edges) {
+            Triangle t1 = new Triangle(e.v1.mult(scale),
+                    e.v1.add(new Point(0, mapHeight/2, 0)).mult(scale), e.v2.mult(scale));
+            Triangle t2 = new Triangle(e.v1.add(new Point(0, mapHeight/2, 0)).mult(scale),
+                    e.v2.add(new Point(0, mapHeight/2, 0)).mult(scale), e.v2.mult(scale));
+
             if (e.texFile.equals("")) {
-                background.add(new Triangle(e.v1, e.v1.add(new Point(0, mapHeight, 0)), e.v2));
-                background.add(new Triangle(e.v1.add(new Point(0, mapHeight, 0)),
-                        e.v2.add(new Point(0, mapHeight, 0)), e.v2));
+                background.add(t1);
+                background.add(t2);
                 continue;
             }
 
-            background.add(new Triangle(e.v1, e.v1.add(new Point(0, mapHeight, 0)), e.v2,
-                    new Point[]{new Point(1, 0), new Point(0, 0), new Point(1, 1)}, e.texFile));
-            background.add(new Triangle(e.v1.add(new Point(0, mapHeight, 0)),
-                    e.v2.add(new Point(0, mapHeight, 0)), e.v2,
-                    new Point[]{new Point(0, 0), new Point(0, 1), new Point(1, 1)}, e.texFile));
+            background.add(new Triangle(t1.pts[0], t1.pts[1], t1.pts[2], new Point[]{new Point(1, 0),
+                    new Point(0, 0), new Point(1, 1)}, e.texFile));
+            background.add(new Triangle(t2.pts[0], t2.pts[1], t2.pts[2], new Point[]{new Point(0, 0),
+                    new Point(0, 1), new Point(1, 1)}, e.texFile));
         }
     }
+
     public void readMap(String fileName) {
         try (BufferedReader in = new BufferedReader(new FileReader(fileName))) {
             String s;
@@ -121,7 +128,7 @@ public class DoomLevel {
                                 vertices.get(Integer.parseInt(split[2])));
                     }
                     case "p" -> {
-                        playerStart = new Point(Double.parseDouble(split[1]), 0, Double.parseDouble(split[2]));
+                        playerStart = new Point(Double.parseDouble(split[1]), Double.parseDouble(split[3]), Double.parseDouble(split[2]));
                     }
                     case "pv" -> {
                         playerLook = new Point(Double.parseDouble(split[1]), 0, Double.parseDouble(split[2]));

@@ -28,11 +28,12 @@ public class Monster implements Sprite {
     private static final int MANCUBUS = 4;
     private static final int SPIDER = 5;
 
-    public Monster(int type, Point initPosition)
+    public Monster(int type, Point initPosition, Point initLook)
     {
         position = initPosition;
         timeSinceFired = 0;
         speed = 0.5;
+        look = initLook;
 
         this.type = type;
         switch (type) {

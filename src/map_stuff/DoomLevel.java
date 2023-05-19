@@ -205,16 +205,19 @@ public class DoomLevel {
                         mapHeight = Double.parseDouble(split[1]);
                     }
                     case "m" -> {
+                        Point pos = new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]));
                         monsters.add(new Monster(Integer.parseInt(split[1]),
-                                new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]))));
+                                pos, playerStart.sub(pos)));
                     }
                     case "i" -> {
+                        Point pos = new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]));
                         sprites.add(new Item(Integer.parseInt(split[1]),
-                                new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]))));
+                                pos, playerStart.sub(pos)));
                     }
                     case "w" -> {
+                        Point pos = new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]));
                         sprites.add(new Weapon(Integer.parseInt(split[1]),
-                                new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]))));
+                                pos, playerStart.sub(pos)));
                     }
                     case "we" -> {
                         winEdge = new Edge(vertices.get(Integer.parseInt(split[1])),

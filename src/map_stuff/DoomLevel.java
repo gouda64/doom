@@ -42,11 +42,31 @@ public class DoomLevel {
 
     public void step() {
         camera.getMesh().tempTris = generateSprites();
-        //update timed graphics like shoot
+
+        for (Monster m : monsters) {
+            if (monsterSeePlayer(m)) {
+                Point mLook = camera.getPos().sub(m.getPosition());
+                m.setPosition(m.getPosition().add(new Point(mLook.x, 0, mLook.z).mult(m.getSpeed()*scale)));
+
+                m.timeSinceFired++;
+                if (m.timeSinceFired >= m.getFireDelay()) {
+                    player.damage(m.getDamage());
+                    m.timeSinceFired = 0;
+                }
+            }
+        }
+        //TODO: timed graphics like shoot/getting shot/monster death?
         //move monsters
-        //have monsters shoot in intervals
         if (player.getHealth() <= 0) gameState = -1;
 
+    }
+    private boolean monsterSeePlayer(Monster m) {
+        Edge lookEdge = new Edge(m.getPosition(), camera.getPos().div(scale));
+        lookEdge.v2.y = 0;
+        for (Edge e : edges) {
+            if (lookEdge.intersects(e)) return false;
+        }
+        return true;
     }
 
     public void shoot() {
@@ -83,8 +103,16 @@ public class DoomLevel {
             leftNormal = (leftNormal.normalize()).mult(width/2);
             Point rightPos = rightNormal.add(s.getPosition());
             Point leftPos = leftNormal.add(s.getPosition());
-            spriteList.add(new Triangle(leftPos, leftPos.add(new Point (0, height, 0)), rightPos));
-            spriteList.add(new Triangle(leftPos.add(new Point (0, height, 0)), rightPos.add(new Point (0, height, 0)), rightPos));
+            if (s.getTexture()==null) {
+                spriteList.add(new Triangle(leftPos, leftPos.add(new Point(0, height, 0)), rightPos));
+                spriteList.add(new Triangle(leftPos.add(new Point(0, height, 0)), rightPos.add(new Point(0, height, 0)), rightPos));
+            }
+            else
+            {
+                spriteList.add(new Triangle( leftPos, leftPos.add(new Point(0, height, 0)), rightPos, new Point []{new Point (0,0), new Point(0,1), new Point (1,0)}, s.getTexture()));
+                spriteList.add(new Triangle( leftPos.add(new Point(0, height, 0)), rightPos.add(new Point(0, height, 0)), rightPos, new Point []{new Point (0,1), new Point(1,1), new Point (1,0)}, s.getTexture()));
+
+            }
 
         }
         for (Monster m : monsters) {
@@ -97,45 +125,46 @@ public class DoomLevel {
         Point pos = camera.getPos().div(scale); pos.y = 0;
         Point lookDir = camera.getLookDir().normalize();
         Point headedTo = pos.add(new Point(lookDir.x, 0, lookDir.z).mult(amt/scale));
-        System.out.println(pos + " " + headedTo);
-        System.out.println(winEdge.v1 + " " + winEdge.v2);
-        System.out.println();
-        if (vecCross2D(pos, headedTo, winEdge.v1, winEdge.v2)) {
+        if (new Edge(pos, headedTo).intersects(winEdge)) {
             gameState = 1;
         }
-
+        System.out.println(winEdge.v1 + "     " + winEdge.v2);
+        System.out.println(pos + "     " + headedTo);
+        System.out.println();
         camera.moveForBackLimited(amt);
-    }
-    private boolean vecCross2D(Point l1, Point l2, Point s1, Point s2) {
-        double epsilon = 0.00001;
-
-        double a1 = l2.z - l1.z; double b1 = l1.x - l2.x;
-        double c1 = a1*l1.x + b1*l1.z;
-        double a2 = s2.z - s1.z; double b2 = s1.x - s2.x;
-        double c2 = a2*s1.x + b2*s1.z;
-        double determinant = a1*b2 - a2*b1;
-        if (determinant > epsilon) {
-            return false;
+//        for (Sprite s : sprites)
+//        {
+//            if (s.getPosition().x == camera.getPos().x && (s.getPosition().z == camera.getPos().z))
+//            {
+//                if (s instanceof Item)
+//                {
+//                    switch(((Item) s).getType()) {
+//                        case 0 -> {
+//                            player.pickUpHealth();
+//                        }
+//                        case 1 -> {
+//                            player.pickUpAmmo();
+//                        }
+//                        case 2 -> {
+//                            player.pickUpArmor();
+//                        }
+//                    }
+//                }
+//                else
+//                    switch (((Weapon) s).getType())
+//                    {
+//
+//                    }
+//
+//                }
+//            }
         }
 
-        Point intersect = new Point((b2*c1 - b1*c2)/determinant, 0, (a1*c2 - a2*c1)/determinant);
-        if (Math.abs((intersect.z-l1.z)*(l2.x-l1.x) - (intersect.x-l1.x)*(l2.z-l1.z)) > epsilon
-            || Math.abs((intersect.z-s1.z)*(s2.x-s1.x) - (intersect.x-s1.x)*(s2.z-s1.z)) > epsilon) {
-            return false;
-        }
-        if (l2.sub(l1).dotProduct(intersect.sub(l1)) < 0 ||
-                l2.sub(l1).dotProduct(intersect.sub(l1)) > Math.pow(l2.sub(l1).length(),2) ||
-                s2.sub(s1).dotProduct(intersect.sub(s1)) < 0 ||
-                s2.sub(s1).dotProduct(intersect.sub(s1)) > Math.pow(s2.sub(s1).length(),2)) {
-            return false;
-        }
-        return true;
-    }
     public void strafe(double amt) {
         Point pos = camera.getPos().div(scale); pos.y = 0;
         Point lookDir = camera.getLookDir().normalize();
         Point headedTo = pos.add(lookDir.crossProduct(new Point(0, 1, 0)).mult(amt/scale));
-        if (vecCross2D(pos, headedTo, winEdge.v1, winEdge.v2)) {
+        if (new Edge(pos, headedTo).intersects(winEdge)) {
             gameState = 1;
         }
 
@@ -165,7 +194,7 @@ public class DoomLevel {
             if (!e.texFile.equals("")) {
                 t1 = new Triangle(t1.pts[0], t1.pts[1], t1.pts[2], new Point[]{new Point(1, 0),
                         new Point(0, 0), new Point(1, 1)}, e.texFile);
-                new Triangle(t2.pts[0], t2.pts[1], t2.pts[2], new Point[]{new Point(0, 0),
+                t2 = new Triangle(t2.pts[0], t2.pts[1], t2.pts[2], new Point[]{new Point(0, 0),
                         new Point(0, 1), new Point(1, 1)}, e.texFile);
             }
 

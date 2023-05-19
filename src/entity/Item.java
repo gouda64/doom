@@ -7,9 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
+
 public class Item implements Sprite {
 
     private BufferedImage texture;
+
     private Point position;
 
     private Point look;
@@ -33,19 +35,19 @@ public class Item implements Sprite {
         //TODO: init textures and dimensions (not from texture, prob wouldn't work)
         if (type == HEALTH)
         {
-            texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
+//            texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
 //            width = texture.getWidth();
 //            height = texture.getHeight();
         }
         else if (type == AMMO)
         {
-            texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
+//            texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
 //            width = texture.getWidth();
 //            height = texture.getHeight();
         }
         else
         {
-            texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
+//            texture = ImageIO.read(new File("DoomHealthBonus.jpeg"));
 //            width = texture.getWidth();
 //            height = texture.getHeight();
         }
@@ -72,4 +74,5 @@ public class Item implements Sprite {
         return height;
     }
 
+    public int getType(){return type;}
 }

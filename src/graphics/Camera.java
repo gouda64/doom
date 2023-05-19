@@ -159,12 +159,12 @@ public class Camera {
 
     private double getLighting(Triangle t, Point normal) {
         double dp = 0;
-        //double dist = Math.abs(pos.sub(t.pts[0]).dotProduct(normal));
+        double dist = Math.abs(pos.sub(t.pts[0]).dotProduct(normal));
         if (renderDist != -1) {
-            dp = Math.max(0, 1 - Math.min((pos.sub(t.pts[0]
-                            .add(t.pts[1]).add(t.pts[2]).mult(1.0/3))
-                    .length())/(3.0/2*renderDist), 0.95));
-            //dp = Math.max(0, 1 - Math.min(dist/(5.0/4*renderDist), 0.95));
+//            dp = Math.max(0, 1 - Math.min((pos.sub(t.pts[0]
+//                            .add(t.pts[1]).add(t.pts[2]).mult(1.0/3))
+//                    .length())/(3.0/2*renderDist), 0.95));
+            dp = Math.max(0, 1 - Math.min(dist/(5.0/4*renderDist), 0.95));
         }
         return dp;
     }

@@ -108,9 +108,6 @@ public class DoomLevel {
         if (new Edge(pos, headedTo).intersects(winEdge)) {
             gameState = 1;
         }
-        System.out.println(winEdge.v1 + "     " + winEdge.v2);
-        System.out.println(pos + "     " + headedTo);
-        System.out.println();
         camera.moveForBackLimited(amt);
     }
     public void strafe(double amt) {

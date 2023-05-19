@@ -38,7 +38,6 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
-        //level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 1.5, 100);
         level = new DoomLevel("./assets/DoomBasic.txt", WIDTH, HEIGHT, 1.5, 100);
 
         timer = new Timer(17, this);
@@ -137,12 +136,13 @@ public class DoomPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //if (!active) return;
+        repaint();
+
+        if (!active) return;
 
         //update game here
         if (level.getGameState() == 1) {
             active = false;
-            //System.out.println("won!");
             //win
         }
         else if (level.getGameState() == -1) {
@@ -152,8 +152,6 @@ public class DoomPanel extends JPanel implements ActionListener {
         else {
             level.step();
         }
-
-        repaint();
     }
 
     public class GKeyAdapter extends KeyAdapter {

@@ -20,7 +20,7 @@ public class Edge {
         double a2 = other.v2.z - other.v1.z; double b2 = other.v1.x - other.v2.x;
         double c2 = a2*other.v1.x + b2*other.v1.z;
         double determinant = a1*b2 - a2*b1;
-        if (determinant > epsilon) {
+        if (Math.abs(determinant) < epsilon) {
             return false;
         }
 

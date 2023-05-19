@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
+import graphics.Rasterizer;
 import graphics.Triangle;
 import map_stuff.DoomLevel;
 
@@ -17,8 +18,7 @@ public class DoomPanel extends JPanel implements ActionListener {
     private boolean firstMove;
 
     private boolean active;
-
-    private Game game;
+    
     private Timer timer;
 
     public DoomPanel() {
@@ -28,11 +28,6 @@ public class DoomPanel extends JPanel implements ActionListener {
         this.setFocusable(true);
         this.addKeyListener(new GKeyAdapter());
         this.addMouseMotionListener(new GMouseAdapter());
-
-        game = new Game();
-
-        timer = new Timer(17, this);
-        timer.start();
 
         mouseX = 0;
         mouseY = 0;
@@ -44,6 +39,9 @@ public class DoomPanel extends JPanel implements ActionListener {
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
         level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 1.5, 100);
+
+        timer = new Timer(17, this);
+        timer.start();
     }
 
     public void paintComponent(Graphics g) {
@@ -79,26 +77,11 @@ public class DoomPanel extends JPanel implements ActionListener {
     }
     public void draw(Graphics g) {
         List<Triangle> view = level.camera.view();
-        for (int i = 0; i < view.size(); i++) {
-            Triangle t = view.get(i);
+        for (Triangle t : view) {
             //Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
             //g.setColor(Color.WHITE);
 
             g.setColor(t.c);
-
-            if (t.attributes[1].contains("SHOT")) {
-                int num = Integer.parseInt(t.attributes[1].substring(5));
-                double max = 0.25 * timer.getDelay() * 3.6;
-                //TODO: move to step (not that important anyways)
-                if (num > max) {
-                    t.attributes[1] = "";
-                } else if (i == 0 || t.attributes != view.get(i-1).attributes) {
-                    t.attributes[1] = "SHOT " + (num + 1);
-                }
-
-                g.setColor(new Color((int) Math.min(255, t.c.getRed() + max - Math.abs(max / 2 - num)),
-                        t.c.getGreen(), t.c.getBlue()));
-            }
             fillTriangle(g, t);
         }
 
@@ -106,15 +89,15 @@ public class DoomPanel extends JPanel implements ActionListener {
 
     public void drawPanel(Graphics g){
         g.setColor(Color.RED);
-        String health = Integer.toString(game.getPlayer().getHealth());
-        String ammo = Integer.toString(game.getPlayer().getAmmo());
-        String armor = Integer.toString(game.getPlayer().getArmor());
+        String health = Integer.toString(level.player.getHealth());
+        String ammo = Integer.toString(level.player.getAmmo());
+        String armor = Integer.toString(level.player.getArmor());
         Font stringFont = new Font( "Monospaced", Font.BOLD, 45 );
         g.setFont(stringFont);
         g.drawString(health + "%",400 + (3-health.length())*15,550);
         g.drawString(armor + "%",995 + (3-armor.length())*15,550);
         g.drawString(ammo,100 + (3-ammo.length())*15,550);
-        int inventory = game.getPlayer().getInventorySize();
+        int inventory = level.player.getInventorySize();
         int mult = 0;
         Graphics2D g2 = (Graphics2D) g;
         g2.setStroke(new BasicStroke(3));
@@ -126,7 +109,7 @@ public class DoomPanel extends JPanel implements ActionListener {
             mult ++;
             inventory--;
         }
-        int remaining = 6-game.getPlayer().getInventorySize();
+        int remaining = 6-level.player.getInventorySize();
         g2.setColor(Color.BLACK);
         while (remaining>0)
         {
@@ -157,7 +140,6 @@ public class DoomPanel extends JPanel implements ActionListener {
 
         //update game here
         if (level.getGameState() == 1) {
-            System.out.println("won!");
             active = false;
             //win
         }

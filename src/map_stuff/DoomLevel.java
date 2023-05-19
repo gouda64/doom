@@ -5,7 +5,10 @@ import graphics.Camera;
 import graphics.Point;
 import graphics.Triangle;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,10 +45,30 @@ public class DoomLevel {
 
     public void step() {
         camera.getMesh().tempTris = generateSprites();
-        //update timed graphics like shoot
+
+        for (Monster m : monsters) {
+            if (monsterSeePlayer(m)) {
+                Point mLook = camera.getPos().sub(m.getPosition());
+                m.setPosition(m.getPosition().add(new Point(mLook.x, 0, mLook.z).mult(m.getSpeed()*scale)));
+
+                m.timeSinceFired++;
+                if (m.timeSinceFired >= m.getFireDelay()) {
+                    player.damage(m.getDamage());
+                    m.timeSinceFired = 0;
+                }
+            }
+        }
+        //TODO: timed graphics like shoot/getting shot/monster death?
         //move monsters
-        //have monsters shoot in intervals
         if (player.getHealth() <= 0) gameState = -1;
+    }
+    private boolean monsterSeePlayer(Monster m) {
+        Point mp = m.getPosition();
+        Point cp = camera.getPos().div(scale); cp.y = 0;
+        for (Edge e : edges) {
+            if (vecCross2D(mp, cp, e.v1, e.v2)) return false;
+        }
+        return true;
     }
 
     public void shoot() {
@@ -85,13 +108,9 @@ public class DoomLevel {
         Point pos = camera.getPos().div(scale); pos.y = 0;
         Point lookDir = camera.getLookDir().normalize();
         Point headedTo = pos.add(new Point(lookDir.x, 0, lookDir.z).mult(amt/scale));
-        System.out.println(pos + " " + headedTo);
-        System.out.println(winEdge.v1 + " " + winEdge.v2);
-        System.out.println();
         if (vecCross2D(pos, headedTo, winEdge.v1, winEdge.v2)) {
             gameState = 1;
         }
-
         camera.moveForBackLimited(amt);
     }
     private boolean vecCross2D(Point l1, Point l2, Point s1, Point s2) {
@@ -153,7 +172,7 @@ public class DoomLevel {
             if (!e.texFile.equals("")) {
                 t1 = new Triangle(t1.pts[0], t1.pts[1], t1.pts[2], new Point[]{new Point(1, 0),
                         new Point(0, 0), new Point(1, 1)}, e.texFile);
-                new Triangle(t2.pts[0], t2.pts[1], t2.pts[2], new Point[]{new Point(0, 0),
+                t2 = new Triangle(t2.pts[0], t2.pts[1], t2.pts[2], new Point[]{new Point(0, 0),
                         new Point(0, 1), new Point(1, 1)}, e.texFile);
             }
 

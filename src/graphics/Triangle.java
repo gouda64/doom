@@ -5,10 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Triangle {
     public Point[] pts;

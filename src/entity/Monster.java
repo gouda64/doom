@@ -75,6 +75,9 @@ public class Monster implements Sprite {
 
     public int getHealth (){return health;}
     public int getDamage (){return damage;}
+    public void takeDamage(int damage) {
+        health -= damage;
+    }
 
     public void setLook(Point l){look = l;}
 

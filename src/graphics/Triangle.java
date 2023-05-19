@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Triangle {
@@ -14,22 +15,25 @@ public class Triangle {
     public Color c = new Color(0, 0, 0);
     public Point[] texPts;
     public BufferedImage texture;
-    public List<String> attributes = new ArrayList<>();
+    public String[] attributes = new String[2];
 
     public Triangle(Point p1, Point p2, Point p3) {
         pts = new Point[]{p1, p2, p3};
+        Arrays.fill(attributes, "");
 
         texPts = new Point[]{new Point(0, 0), new Point(0, 1),
                 new Point(1, 0)};
     }
     public Triangle(Point p1, Point p2, Point p3, Point[] texPts, BufferedImage texture) {
         pts = new Point[]{p1, p2, p3};
+        Arrays.fill(attributes, "");
 
         this.texPts = texPts;
         this.texture = texture;
     }
     public Triangle(Point p1, Point p2, Point p3, Point[] texPts, String texFile) {
         pts = new Point[]{p1, p2, p3};
+        Arrays.fill(attributes, "");
 
         this.texPts = texPts;
         try {

@@ -175,8 +175,8 @@ public class DoomLevel {
                         vertices.add(new Point(Double.parseDouble(split[1]), 0, Double.parseDouble(split[2])));
                     }
                     case "e" -> {
-                        Edge e = new Edge(vertices.get(Integer.parseInt(split[1])),
-                                vertices.get(Integer.parseInt(split[2])));
+                        Edge e = new Edge(vertices.get(Integer.parseInt(split[2])),
+                                vertices.get(Integer.parseInt(split[1])));
                         if (split.length > 3) {
                             e.texFile = split[3];
                         }

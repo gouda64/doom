@@ -79,8 +79,6 @@ public class Monster implements Sprite {
         health -= damage;
     }
 
-    public void setLook(Point l){look = l;}
-
 
     @Override
     public Point getPosition() {
@@ -102,7 +100,5 @@ public class Monster implements Sprite {
         return height;
     }
 
-    @Override
-    public Point getLook(){return look;}
 
 }

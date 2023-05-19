@@ -103,11 +103,6 @@ public class Weapon implements Sprite {
         return height;
     }
 
-    @Override
-    public Point getLook(){return look;}
-
-    public void setLook(Point l){look = l;}
-
     public int getFireDelay()
     {
         return fireDelay;

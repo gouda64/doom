@@ -46,6 +46,7 @@ public class DoomLevel {
         //move monsters
         //have monsters shoot in intervals
         if (player.getHealth() <= 0) gameState = -1;
+
     }
 
     public void shoot() {
@@ -70,15 +71,26 @@ public class DoomLevel {
 
     public List<Triangle> generateSprites() {
         //make sure to add attributes
+        ArrayList<Triangle> spriteList = new ArrayList<Triangle>();
 
         for (Sprite s : sprites) {
             double height = mapHeight*s.getHeightPropToCeiling();
             double width = height*s.getWidthPropToHeight();
+            Point look = camera.getPos().sub(s.getPosition());
+            Point rightNormal = look.crossProduct(new Point(0,1,0));
+            Point leftNormal = rightNormal.mult(-1);
+            rightNormal = (rightNormal.normalize()).mult(width/2);
+            leftNormal = (leftNormal.normalize()).mult(width/2);
+            Point rightPos = rightNormal.add(s.getPosition());
+            Point leftPos = leftNormal.add(s.getPosition());
+            spriteList.add(new Triangle(leftPos, leftPos.add(new Point (0, height, 0)), rightPos));
+            spriteList.add(new Triangle(leftPos.add(new Point (0, height, 0)), rightPos.add(new Point (0, height, 0)), rightPos));
+
         }
         for (Monster m : monsters) {
 
         }
-        return new ArrayList<>();
+        return spriteList;
     }
 
     public void walk(double amt) {

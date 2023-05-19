@@ -51,7 +51,6 @@ public class Item implements Sprite {
         }
 
     }
-    public void setLook(Point l){look = l;}
 
     @Override
     public Point getPosition() {
@@ -72,8 +71,5 @@ public class Item implements Sprite {
     public double getHeightPropToCeiling() {
         return height;
     }
-
-    @Override
-    public Point getLook(){return look;}
 
 }

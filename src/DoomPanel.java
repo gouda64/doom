@@ -38,11 +38,11 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
-        level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 1.5, 100);
+        //level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 1.5, 100);
+        level = new DoomLevel("./assets/DoomBasic.txt", WIDTH, HEIGHT, 1.5, 100);
 
         timer = new Timer(17, this);
         timer.start();
-        level = new DoomLevel("./assets/DoomBasic.txt", WIDTH, HEIGHT, 1.5, 100);
     }
 
     public void paintComponent(Graphics g) {
@@ -137,11 +137,12 @@ public class DoomPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!active) return;
+        //if (!active) return;
 
         //update game here
         if (level.getGameState() == 1) {
             active = false;
+            //System.out.println("won!");
             //win
         }
         else if (level.getGameState() == -1) {
@@ -160,7 +161,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         final double rotation = 0.2;
         @Override
         public void keyPressed(KeyEvent e) {
-            if (active) {
+            if (true) {//active) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE -> level.camera.moveY(movement);
                     case KeyEvent.VK_SHIFT -> level.camera.moveY(-movement);

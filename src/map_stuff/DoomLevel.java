@@ -5,10 +5,7 @@ import graphics.Camera;
 import graphics.Point;
 import graphics.Triangle;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,10 +60,10 @@ public class DoomLevel {
         if (player.getHealth() <= 0) gameState = -1;
     }
     private boolean monsterSeePlayer(Monster m) {
-        Point mp = m.getPosition();
-        Point cp = camera.getPos().div(scale); cp.y = 0;
+        Edge lookEdge = new Edge(m.getPosition(), camera.getPos().div(scale));
+        lookEdge.v2.y = 0;
         for (Edge e : edges) {
-            if (vecCross2D(mp, cp, e.v1, e.v2)) return false;
+            if (lookEdge.intersects(e)) return false;
         }
         return true;
     }
@@ -108,41 +105,19 @@ public class DoomLevel {
         Point pos = camera.getPos().div(scale); pos.y = 0;
         Point lookDir = camera.getLookDir().normalize();
         Point headedTo = pos.add(new Point(lookDir.x, 0, lookDir.z).mult(amt/scale));
-        if (vecCross2D(pos, headedTo, winEdge.v1, winEdge.v2)) {
+        if (new Edge(pos, headedTo).intersects(winEdge)) {
             gameState = 1;
         }
+        System.out.println(winEdge.v1 + "     " + winEdge.v2);
+        System.out.println(pos + "     " + headedTo);
+        System.out.println();
         camera.moveForBackLimited(amt);
-    }
-    private boolean vecCross2D(Point l1, Point l2, Point s1, Point s2) {
-        double epsilon = 0.00001;
-
-        double a1 = l2.z - l1.z; double b1 = l1.x - l2.x;
-        double c1 = a1*l1.x + b1*l1.z;
-        double a2 = s2.z - s1.z; double b2 = s1.x - s2.x;
-        double c2 = a2*s1.x + b2*s1.z;
-        double determinant = a1*b2 - a2*b1;
-        if (determinant > epsilon) {
-            return false;
-        }
-
-        Point intersect = new Point((b2*c1 - b1*c2)/determinant, 0, (a1*c2 - a2*c1)/determinant);
-        if (Math.abs((intersect.z-l1.z)*(l2.x-l1.x) - (intersect.x-l1.x)*(l2.z-l1.z)) > epsilon
-            || Math.abs((intersect.z-s1.z)*(s2.x-s1.x) - (intersect.x-s1.x)*(s2.z-s1.z)) > epsilon) {
-            return false;
-        }
-        if (l2.sub(l1).dotProduct(intersect.sub(l1)) < 0 ||
-                l2.sub(l1).dotProduct(intersect.sub(l1)) > Math.pow(l2.sub(l1).length(),2) ||
-                s2.sub(s1).dotProduct(intersect.sub(s1)) < 0 ||
-                s2.sub(s1).dotProduct(intersect.sub(s1)) > Math.pow(s2.sub(s1).length(),2)) {
-            return false;
-        }
-        return true;
     }
     public void strafe(double amt) {
         Point pos = camera.getPos().div(scale); pos.y = 0;
         Point lookDir = camera.getLookDir().normalize();
         Point headedTo = pos.add(lookDir.crossProduct(new Point(0, 1, 0)).mult(amt/scale));
-        if (vecCross2D(pos, headedTo, winEdge.v1, winEdge.v2)) {
+        if (new Edge(pos, headedTo).intersects(winEdge)) {
             gameState = 1;
         }
 

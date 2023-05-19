@@ -10,6 +10,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class DoomLevel {
     private List<Triangle> background = new ArrayList<>();
@@ -91,33 +92,36 @@ public class DoomLevel {
 
     public List<Triangle> generateSprites() {
         //make sure to add attributes
-        ArrayList<Triangle> spriteList = new ArrayList<Triangle>();
+        List<Triangle> spriteList = new ArrayList<Triangle>();
 
-        for (Sprite s : sprites) {
+        Stream.of(sprites.stream(), monsters.stream()).flatMap(s -> s).forEach(s -> {
             double height = mapHeight*s.getHeightPropToCeiling();
             double width = height*s.getWidthPropToHeight();
-            Point look = camera.getPos().sub(s.getPosition());
+
+            Point camPos = camera.getPos().div(scale);
+            camPos.y = 0;
+            Point look = camPos.sub(s.getPosition());
             Point rightNormal = look.crossProduct(new Point(0,1,0));
             Point leftNormal = rightNormal.mult(-1);
             rightNormal = (rightNormal.normalize()).mult(width/2);
             leftNormal = (leftNormal.normalize()).mult(width/2);
             Point rightPos = rightNormal.add(s.getPosition());
             Point leftPos = leftNormal.add(s.getPosition());
-            if (s.getTexture()==null) {
-                spriteList.add(new Triangle(leftPos, leftPos.add(new Point(0, height, 0)), rightPos));
-                spriteList.add(new Triangle(leftPos.add(new Point(0, height, 0)), rightPos.add(new Point(0, height, 0)), rightPos));
+
+            Triangle t1 = new Triangle(leftPos.mult(scale), leftPos.add(new Point(0, height, 0)).mult(scale), rightPos.mult(scale));
+            Triangle t2 = new Triangle(leftPos.add(new Point(0, height, 0)).mult(scale), rightPos.add(new Point(0, height, 0)).mult(scale), rightPos.mult(scale));
+
+            if (s.getTexture() != null) {
+                t1 = new Triangle(t1.pts[0], t1.pts[1], t1.pts[2], new Point[]{new Point (0,0),
+                        new Point(0,1), new Point (1,0)}, s.getTexture());
+                t2 = new Triangle(t2.pts[0], t2.pts[1], t2.pts[2], new Point[]{new Point (0,1),
+                        new Point(1,1), new Point (1,0)}, s.getTexture());
             }
-            else
-            {
-                spriteList.add(new Triangle( leftPos, leftPos.add(new Point(0, height, 0)), rightPos, new Point []{new Point (0,0), new Point(0,1), new Point (1,0)}, s.getTexture()));
-                spriteList.add(new Triangle( leftPos.add(new Point(0, height, 0)), rightPos.add(new Point(0, height, 0)), rightPos, new Point []{new Point (0,1), new Point(1,1), new Point (1,0)}, s.getTexture()));
 
-            }
+            spriteList.add(t1);
+            spriteList.add(t2);
+        });
 
-        }
-        for (Monster m : monsters) {
-
-        }
         return spriteList;
     }
 
@@ -225,18 +229,15 @@ public class DoomLevel {
                     }
                     case "m" -> {
                         Point pos = new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]));
-                        monsters.add(new Monster(Integer.parseInt(split[1]),
-                                pos, playerStart.sub(pos)));
+                        monsters.add(new Monster(Integer.parseInt(split[1]), pos));
                     }
                     case "i" -> {
                         Point pos = new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]));
-                        sprites.add(new Item(Integer.parseInt(split[1]),
-                                pos, playerStart.sub(pos)));
+                        sprites.add(new Item(Integer.parseInt(split[1]), pos));
                     }
                     case "w" -> {
                         Point pos = new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]));
-                        sprites.add(new Weapon(Integer.parseInt(split[1]),
-                                pos, playerStart.sub(pos)));
+                        sprites.add(new Weapon(Integer.parseInt(split[1]), pos));
                     }
                     case "we" -> {
                         winEdge = new Edge(vertices.get(Integer.parseInt(split[1])),

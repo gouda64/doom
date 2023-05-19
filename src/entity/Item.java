@@ -14,8 +14,6 @@ public class Item implements Sprite {
 
     private Point position;
 
-    private Point look;
-
     private int type;
     private double height;
     private double widthToHeight;
@@ -26,11 +24,13 @@ public class Item implements Sprite {
 
 
 
-    public Item (int type, Point initPosition, Point initLook) throws IOException
+    public Item (int type, Point initPosition) throws IOException
     {
         position = initPosition;
         this.type = type;
-        look = initLook;
+
+        height = 0.1;
+        widthToHeight = 0.5;
 
         //TODO: init textures and dimensions (not from texture, prob wouldn't work)
         if (type == HEALTH)

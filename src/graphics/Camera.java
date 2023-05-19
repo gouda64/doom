@@ -161,15 +161,12 @@ public class Camera {
         double dp = 0;
         double dist = Math.abs(pos.sub(t.pts[0]).dotProduct(normal));
         if (renderDist != -1) {
-<<<<<<< HEAD
             dp = Math.max(0, 1 - Math.min((pos.sub(t.pts[0]
                             .add(t.pts[1]).add(t.pts[2]).mult(1.0/3))
                     .length())/(3.0/2*renderDist), 0.95));
-=======
 //            dp = Math.max(0, 1 - Math.min((pos.sub(t.pts[0]
 //                            .add(t.pts[1]).add(t.pts[2]).mult(1.0/3))
 //                    .length())/(3.0/2*renderDist), 0.95));
->>>>>>> ecbfc8424b00e804bc04441446b4266868dae7a6
             dp = Math.max(0, 1 - Math.min(dist/(5.0/4*renderDist), 0.95));
         }
         return dp;

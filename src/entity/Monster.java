@@ -10,7 +10,6 @@ public class Monster implements Sprite {
     private BufferedImage texture;
     private double widthToHeight;
     private double height;
-    private Point look;
 
 
     private int health;
@@ -28,12 +27,11 @@ public class Monster implements Sprite {
     private static final int MANCUBUS = 4;
     private static final int SPIDER = 5;
 
-    public Monster(int type, Point initPosition, Point initLook)
+    public Monster(int type, Point initPosition)
     {
         position = initPosition;
         timeSinceFired = 0;
         speed = 0.5;
-        look = initLook;
 
         this.type = type;
         switch (type) {
@@ -89,8 +87,6 @@ public class Monster implements Sprite {
     public double getSpeed() {
         return speed;
     }
-
-    public void setLook(Point l){look = l;}
 
 
 

@@ -55,6 +55,12 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        g.drawRect(WIDTH/2-2, HEIGHT/2-12, 4, 24);
 //        g.drawRect(WIDTH/2-12, HEIGHT/2-2, 24, 4);
 
+        drawPanelBkgd(g);
+        drawPanel(g);
+
+    }
+
+    private void drawPanelBkgd(Graphics g) {
         g.setColor(new Color (210, 180, 140));
         g.drawRect(0, 500,1200, 600);
         g.fillRect(0, 500,1200, 600);
@@ -70,11 +76,8 @@ public class DoomPanel extends JPanel implements ActionListener {
         g.drawString("Armor", 1010, 590);
         g.setColor(Color.WHITE);
         g.drawRect(575, 400, 50, 100);
-
-        drawPanel(g);
-
-
     }
+
     public void draw(Graphics g) {
         List<Triangle> view = level.camera.view();
         for (Triangle t : view) {

@@ -16,7 +16,6 @@ public class Weapon implements Sprite {
     private BufferedImage texture;
     private double widthToHeight;
     private double height;
-    private Point look;
 
     private int meanDamage;
     private int deviation;
@@ -48,9 +47,8 @@ public class Weapon implements Sprite {
             }
         }
     }
-    public Weapon(int weaponType, Point position, Point initLook) throws IOException {
+    public Weapon(int weaponType, Point position) throws IOException {
         this.position = position;
-        look = initLook;
 
         //TODO: init textures and dimensions
         type = weaponType;

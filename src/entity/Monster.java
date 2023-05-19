@@ -26,9 +26,10 @@ public class Monster implements Sprite {
     private static final int MANCUBUS = 4;
     private static final int SPIDER = 5;
 
-    public Monster(int type, Point initPosition)
+    public Monster(int type, Point initPosition, Point initLook)
     {
         position = initPosition;
+        look = initLook;
 
         this.type = type;
         if (type == ZOMBIEMAN) { //TODO: init textures and dimensions

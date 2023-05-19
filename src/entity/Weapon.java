@@ -48,8 +48,9 @@ public class Weapon implements Sprite {
             }
         }
     }
-    public Weapon(int weaponType, Point position) throws IOException {
+    public Weapon(int weaponType, Point position, Point initLook) throws IOException {
         this.position = position;
+        look = initLook;
 
         //TODO: init textures and dimensions
         type = weaponType;

@@ -42,6 +42,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 
         timer = new Timer(17, this);
         timer.start();
+        level = new DoomLevel("./assets/DoomBasic.txt", WIDTH, HEIGHT, 1.5, 100);
     }
 
     public void paintComponent(Graphics g) {

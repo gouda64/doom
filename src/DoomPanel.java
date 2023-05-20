@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 import java.util.List;
 
 import graphics.Triangle;
@@ -84,6 +85,11 @@ public class DoomPanel extends JPanel implements ActionListener {
             //g.setColor(Color.WHITE);
 
             g.setColor(t.c);
+
+            if (t.attributes[1].contains("SHOT")) {
+                g.setColor(Color.RED);
+            }
+
             fillTriangle(g, t);
         }
 

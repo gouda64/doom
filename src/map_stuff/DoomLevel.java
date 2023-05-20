@@ -45,6 +45,8 @@ public class DoomLevel {
         camera.getMesh().tempTris = generateSprites();
 
         for (Monster m : monsters) {
+            if (!m.isVisible()) continue;
+            if (m.shotTime > -1) m.shotTime--;
             if (monsterSeePlayer(m)) {
                 Point camPos = camera.getPos().div(scale);
                 camPos.y = 0;
@@ -78,16 +80,19 @@ public class DoomLevel {
     public void shoot() {
         int victim = camera.lookingAt();
         List<Triangle> tris = camera.getMesh().getAllTris();
-        tris.get(victim).attributes[1] = "SHOT 0";
-        if (victim%2 == 0) {
-            tris.get(victim+1).attributes[1] = "SHOT 0";
-        }
-        else {
-            tris.get(victim-1).attributes[1] = "SHOT 0";
-        }
+
         if (tris.get(victim).attributes[0].contains("MONSTER")) {
-            monsters.get(Integer.parseInt(tris.get(victim).attributes[0].substring(8)))
-                    .takeDamage(player.getEquipped().shoot());
+            tris.get(victim).attributes[1] = "SHOT";
+            if (victim%2 == 0) {
+                tris.get(victim+1).attributes[1] = "SHOT";
+            }
+            else {
+                tris.get(victim-1).attributes[1] = "SHOT";
+            }
+
+            Monster m =  monsters.get(Integer.parseInt(tris.get(victim).attributes[0].substring(8)));
+            m.shotTime = 10;
+            m.takeDamage(player.getEquipped().shoot());
         }
     }
 
@@ -100,6 +105,7 @@ public class DoomLevel {
         List<Triangle> spriteList = new ArrayList<Triangle>();
 
         Stream.of(sprites.stream(), monsters.stream()).flatMap(v -> v).forEach(s -> {
+            if (!s.isVisible()) return;
             double height = mapHeight*s.getHeightPropToCeiling();
             double width = height*s.getWidthPropToHeight();
 
@@ -122,6 +128,23 @@ public class DoomLevel {
                 t2 = new Triangle(t2.pts[0], t2.pts[1], t2.pts[2], new Point[]{new Point (0,1),
                         new Point(1,1), new Point (1,0)}, s.getTexture());
             }
+
+            String attr = "";
+            if (s instanceof Monster) {
+                attr = "MONSTER " + monsters.indexOf((Monster)s); //could be more efficient
+                if (((Monster) s).shotTime > -1) {
+                    t1.attributes[1] = "SHOT";
+                    t2.attributes[1] = "SHOT";
+                }
+            }
+            else if (s instanceof Item) {
+                attr = "ITEM " + sprites.indexOf(s);
+            }
+            else if (s instanceof Weapon) {
+                attr = "WEAPON " + sprites.indexOf(s);
+            }
+            t1.attributes[0] = attr;
+            t2.attributes[0] = attr;
 
             spriteList.add(t1);
             spriteList.add(t2);

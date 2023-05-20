@@ -328,7 +328,7 @@ public class Camera {
 
     public int lookingAt() {
         double epsilon = 0.00001;
-        int looking = 0;
+        int looking = -1;
         double minT = Double.MAX_VALUE;
         List<Triangle> allTris = mesh.getAllTris();
         for (int i = 0; i < allTris.size(); i++) {

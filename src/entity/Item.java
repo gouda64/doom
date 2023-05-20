@@ -17,6 +17,7 @@ public class Item implements Sprite {
     private int type;
     private double height;
     private double widthToHeight;
+    private boolean visible = true;
 
     private static final int HEALTH = 0;
     private static final int AMMO = 1;
@@ -67,6 +68,16 @@ public class Item implements Sprite {
     @Override
     public double getWidthPropToHeight() {
         return widthToHeight;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+
+    @Override
+    public void setVisible(boolean v) {
+        visible = v;
     }
 
     @Override

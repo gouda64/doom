@@ -18,6 +18,9 @@ public class Monster implements Sprite {
 
     private int fireDelay;
     public int timeSinceFired;
+    private boolean visible = true;
+
+    public int shotTime = -1;
 
     private int type;
     private static final int ZOMBIEMAN = 0;
@@ -84,6 +87,7 @@ public class Monster implements Sprite {
     public int getDamage (){return damage;}
     public void takeDamage(int damage) {
         health -= damage;
+        if (health <= 0) visible = false;
     }
 
 
@@ -110,6 +114,15 @@ public class Monster implements Sprite {
     @Override
     public double getWidthPropToHeight() {
         return widthToHeight;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+    @Override
+    public void setVisible(boolean v) {
+        visible = v;
     }
 
     @Override

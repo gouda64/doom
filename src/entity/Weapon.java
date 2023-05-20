@@ -21,6 +21,7 @@ public class Weapon implements Sprite {
     private int deviation;
     private int fireDelay;
     private int type;
+    private boolean visible = true;
 
     public Weapon(int weaponType) {
         type = weaponType;
@@ -87,15 +88,21 @@ public class Weapon implements Sprite {
     public Point getPosition() {
         return position;
     }
-
     @Override
     public BufferedImage getTexture() {
         return texture;
     }
-
     @Override
     public double getWidthPropToHeight() {
         return widthToHeight;
+    }
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+    @Override
+    public void setVisible(boolean v) {
+        visible = v;
     }
 
     @Override
@@ -108,19 +115,19 @@ public class Weapon implements Sprite {
         return fireDelay;
     }
 
-        public int shoot()
-        {
-            boolean add = false;
-            if (Math.random()>= 0.5)
-                add = true;
-            int value = (int)(Math.random()*deviation);
-            if (add)
-                return meanDamage + value;
-            else
-                return meanDamage-value;
-
-        }
+    public int shoot()
+    {
+        boolean add = false;
+        if (Math.random()>= 0.5)
+            add = true;
+        int value = (int)(Math.random()*deviation);
+        if (add)
+            return meanDamage + value;
+        else
+            return meanDamage-value;
 
     }
+
+}
 
 

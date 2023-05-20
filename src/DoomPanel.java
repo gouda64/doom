@@ -39,7 +39,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
-        level = new DoomLevel("./assets/txt/DoomBasic.txt", WIDTH, HEIGHT, 1.25, 100);
+        level = new DoomLevel("./assets/txt/DoomBasic.txt", WIDTH, HEIGHT, 1.00, 100);
 
         timer = new Timer(17, this);
         timer.start();
@@ -175,7 +175,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         public void keyPressed(KeyEvent e) {
             if (true) {//active) { TODO: change back to active
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_SPACE -> level.camera.moveY(movement);
+                    case KeyEvent.VK_CONTROL -> level.camera.moveY(movement);
                     case KeyEvent.VK_SHIFT -> level.camera.moveY(-movement);
                     case KeyEvent.VK_D -> level.strafe(movement);//level.camera.moveRightLeft(movement);
                     case KeyEvent.VK_A -> level.strafe(-movement);//level.camera.moveRightLeft(-movement);
@@ -183,10 +183,15 @@ public class DoomPanel extends JPanel implements ActionListener {
                     case KeyEvent.VK_S -> level.walk(-movement);//level.camera.moveForBack(-movement);
                     case KeyEvent.VK_LEFT -> level.camera.turnRightLeft(-rotation);
                     case KeyEvent.VK_RIGHT -> level.camera.turnRightLeft(rotation);
-                    case KeyEvent.VK_CONTROL -> level.shoot();
+                    case KeyEvent.VK_SPACE -> level.shoot();
                     case KeyEvent.VK_Z -> level.pickUp();
+                    case KeyEvent.VK_1 -> level.player.equipt(1);
+                    case KeyEvent.VK_2 -> level.player.equipt(2);
+                    case KeyEvent.VK_3 -> level.player.equipt(3);
+                    case KeyEvent.VK_4 -> level.player.equipt(4);
                     //case KeyEvent.VK_UP -> level.camera.turnUpDown(rotation);
                     //case KeyEvent.VK_DOWN -> level.camera.turnUpDown(-rotation);
+
                 }
             }
         }

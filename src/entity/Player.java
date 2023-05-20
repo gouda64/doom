@@ -7,11 +7,6 @@ public class Player {
     private Weapon[] inventory;
     private Weapon equipped;
 
-    private static final int PISTOL = 2;
-    private static final int SHOTGUN = 3;
-    private static final int PLASMAGUN = 4;
-    private static final int BFG9000 = 5;
-
     public Player()
     {
         health = 100;
@@ -20,6 +15,12 @@ public class Player {
         inventory = new Weapon[6];
         inventory[0] = new Weapon(Weapon.SLINGSHOT);
         equipped = inventory[0];
+    }
+
+    public void equipt(int a)
+    {
+        if (inventory[a-1] !=null)
+        equipped = inventory[a-1];
     }
 
     public void pickUpWeapon(int type)
@@ -48,7 +49,7 @@ public class Player {
     public void pickUpItem(int type) {
         switch (type) {
             case Item.HEALTH -> {
-                health++;
+                health+=2;
             }
             case Item.AMMO -> {
                 ammo+=10;

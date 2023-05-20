@@ -94,7 +94,8 @@ public class DoomLevel {
     }
 
     public void shoot() {
-        if(player.getAmmo()>0) {
+        if (player.getAmmo()>0) {
+            player.shot();
             int victim = camera.lookingAt();
             if (victim <= 0) return;
             List<Triangle> tris = camera.getMesh().getAllTris();
@@ -110,10 +111,12 @@ public class DoomLevel {
                 Monster m = monsters.get(Integer.parseInt(tris.get(victim).attributes[0].substring(8)));
                 m.shotTime = 10;
                 m.takeDamage(player.getEquipped().shoot());
-                player.shot();
             }
         }
-    }
+
+
+        }
+
 
     public void pickUp() {
         List<Triangle> tris = camera.getMesh().getAllTris();

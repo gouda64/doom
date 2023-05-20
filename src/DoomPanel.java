@@ -112,6 +112,10 @@ public class DoomPanel extends JPanel implements ActionListener {
 
         while (inventory>0)
         {
+            g2.setColor(Color.RED);
+            if (level.player.getEquipped().equals(level.player.getInventory()[mult])) {
+                g2.setColor(Color.WHITE);
+            }
             g2.drawRect(606 + mult*49, 515,45, 45);
             g2.drawString(Integer.toString(mult+1), 615 + mult*49, 555);
             mult ++;

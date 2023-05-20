@@ -70,6 +70,10 @@ public class Player {
         return a;
     }
 
+    public Weapon[] getInventory() {
+        return inventory;
+    }
+
     public int getHealth(){return health;}
     public int getAmmo(){return ammo;}
     public int getArmor(){return armor;}

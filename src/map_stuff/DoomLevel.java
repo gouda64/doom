@@ -69,8 +69,6 @@ public class DoomLevel {
                             camera.lookingDist(leftPos.mult(scale), mMove.mult(scale)) > 1) {
                         m.setPosition(m.getPosition().add(mMove));
                     }
-
-                    //TODO: use lookingDist, make sure can't pass through walls
                 }
 
                 m.timeSinceFired += 20;
@@ -98,6 +96,7 @@ public class DoomLevel {
     public void shoot() {
         if(player.getAmmo()>0) {
             int victim = camera.lookingAt();
+            if (victim <= 0) return;
             List<Triangle> tris = camera.getMesh().getAllTris();
 
             if (tris.get(victim).attributes[0].contains("MONSTER")) {
@@ -117,10 +116,16 @@ public class DoomLevel {
     }
 
     public void pickUp() {
-        int victim = camera.lookingAt();
         List<Triangle> tris = camera.getMesh().getAllTris();
+        Triangle victim = tris.get(camera.lookingAt());
+        
+        Point h = camera.getLookDir().crossProduct(victim.pts[2].sub(victim.pts[0]));
+        Point q = camera.getPos().sub(victim.pts[0]).crossProduct(victim.pts[1].sub(victim.pts[0]));
+        double a = victim.pts[1].sub(victim.pts[0]).dotProduct(h);
+        double t = 1/a * victim.pts[2].sub(victim.pts[0]).dotProduct(q);
+        if (t > 150) return;
 
-        String[] split = tris.get(victim).attributes[0].split(" ");
+        String[] split = victim.attributes[0].split(" ");
 
         if (!split[0].equals("SPRITE")) return;
         if (split[1].equals("ITEM")) {

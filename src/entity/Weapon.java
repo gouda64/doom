@@ -3,14 +3,16 @@ package entity;
 import graphics.Point;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.lang.Math;
+import javax.imageio.ImageIO;
 
 public class Weapon implements Sprite {
-     static final int PISTOL = 2;
-     static final int SHOTGUN = 3;
-     static final int PLASMAGUN = 4;
-     static final int BFG9000 = 5;
+     static final int SLINGSHOT = 2;
+     static final int PENCIL = 3;
+     static final int FIREFLOWER = 4;
+     static final int WAND = 5;
 
     private Point position;
     private BufferedImage texture;
@@ -23,28 +25,32 @@ public class Weapon implements Sprite {
     private int type;
     private boolean visible = true;
 
-    public Weapon(int weaponType) {
+    public Weapon(int weaponType)  {
         type = weaponType;
         switch (type) {
-            case PISTOL -> {
+            case SLINGSHOT -> {
                 meanDamage = 10;
                 deviation = 5;
                 fireDelay = 2500;
+
             }
-            case SHOTGUN -> {
+            case PENCIL -> {
                 meanDamage = 70;
                 deviation = 35;
                 fireDelay = 967;
+
             }
-            case PLASMAGUN -> {
+            case FIREFLOWER -> {
                 meanDamage = 250;
                 deviation = 200;
                 fireDelay = 2500;
+
             }
-            case BFG9000 -> {
+            case WAND -> {
                 meanDamage = 313;
                 deviation = 107;
                 fireDelay = 933;
+
             }
         }
     }
@@ -56,25 +62,62 @@ public class Weapon implements Sprite {
         //TODO: init textures and dimensions
         type = weaponType;
         switch (type) {
-            case PISTOL -> {
+            case SLINGSHOT -> {
                 meanDamage = 10;
                 deviation = 5;
                 fireDelay = 2500;
+                height = 0.025;
+                widthToHeight = 0.7;
+                try {
+                    texture = ImageIO.read(new File("./assets/img/DoomSlingshot.png"));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
-            case SHOTGUN -> {
+            case PENCIL -> {
                 meanDamage = 70;
                 deviation = 35;
                 fireDelay = 967;
+                height = 0.025;
+                widthToHeight = 0.5;
+                try {
+                    texture = ImageIO.read(new File("./assets/img/DoomPencil.png"));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
             }
-            case PLASMAGUN -> {
+            case FIREFLOWER -> {
                 meanDamage = 250;
                 deviation = 200;
                 fireDelay = 2500;
+                height = 0.025;
+                widthToHeight = 1;
+                try {
+                    texture = ImageIO.read(new File("./assets/img/DoomFireflower.png"));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
-            case BFG9000 -> {
+            case WAND -> {
                 meanDamage = 313;
                 deviation = 107;
                 fireDelay = 933;
+                height = 0.025;
+                widthToHeight = 0.7;
+                try {
+                    texture = ImageIO.read(new File("./assets/img/DoomWand.png"));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
     }

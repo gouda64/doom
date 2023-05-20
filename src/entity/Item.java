@@ -30,7 +30,7 @@ public class Item implements Sprite {
         position = initPosition;
         this.type = type;
 
-        height = 0.1;
+        height = 0.015;
         widthToHeight = 0.5;
 
 

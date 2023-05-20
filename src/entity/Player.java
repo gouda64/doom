@@ -18,15 +18,24 @@ public class Player {
         ammo = 50;
         armor = 0;
         inventory = new Weapon[6];
-        inventory[0] = new Weapon(Weapon.PISTOL);
+        inventory[0] = new Weapon(Weapon.SLINGSHOT);
         equipped = inventory[0];
     }
 
     public void pickUpWeapon(int type)
     {
         int a = 0;
-        while(inventory[a]!=null || inventory[a].getType() != type || a<=5)
+        while(a<=5)
         {
+            if (inventory[a] == null) {
+                inventory[a] = new Weapon(type);
+                return;
+            }
+            else if (inventory[a].getType() == type) {
+
+                ammo += 15;
+                return;
+            }
             a++;
         }
         if (inventory[a] == null)

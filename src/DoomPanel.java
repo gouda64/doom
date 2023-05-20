@@ -49,18 +49,14 @@ public class DoomPanel extends JPanel implements ActionListener {
         super.paintComponent(g);
         draw(g);
 
-        g.setColor(Color.WHITE);
-        g.fillRect(WIDTH/2-2, HEIGHT/2-12, 4, 24);
-        g.fillRect(WIDTH/2-12, HEIGHT/2-2, 24, 4);
-//        g.setColor(Color.BLACK);
-//        g.drawRect(WIDTH/2-2, HEIGHT/2-12, 4, 24);
-//        g.drawRect(WIDTH/2-12, HEIGHT/2-2, 24, 4);
-
         if (active) {
+            g.setColor(Color.WHITE);
+            g.fillRect(WIDTH/2-2, HEIGHT/2-12, 4, 24);
+            g.fillRect(WIDTH/2-12, HEIGHT/2-2, 24, 4);
+
             drawPanelBkgd(g);
             drawPanel(g);
         }
-
     }
 
     private void drawPanelBkgd(Graphics g) {

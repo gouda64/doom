@@ -50,7 +50,7 @@ public class DoomLevel {
         for (Monster m : monsters) {
             if (!m.isVisible()) continue;
             if (m.shotTime > -1) m.shotTime--;
-            if (monsterSeePlayer(m)) {
+            if (pointSeePlayer(m.getPosition())) {
                 Point camPos = camera.getPos().div(scale);
                 camPos.y = 0;
                 Point mMove = camPos.sub(m.getPosition()).normalize().mult(m.getSpeed());
@@ -85,8 +85,8 @@ public class DoomLevel {
         if (player.getHealth() <= 0) gameState = -1;
 
     }
-    private boolean monsterSeePlayer(Monster m) {
-        Edge lookEdge = new Edge(m.getPosition(), camera.getPos().div(scale));
+    private boolean pointSeePlayer(Point p) {
+        Edge lookEdge = new Edge(p, camera.getPos().div(scale));
         lookEdge.v2.y = 0;
         if (lookEdge.length() > renderDist) return false;
         for (Edge e : edges) {
@@ -161,6 +161,10 @@ public class DoomLevel {
             leftNormal = (leftNormal.normalize()).mult(width/2);
             Point rightPos = rightNormal.add(s.getPosition());
             Point leftPos = leftNormal.add(s.getPosition());
+
+            if (!pointSeePlayer(rightPos) && !pointSeePlayer(leftPos)) {
+                return;
+            }
 
             Triangle t1 = new Triangle(leftPos.mult(scale), leftPos.add(new Point(0, height, 0)).mult(scale), rightPos.mult(scale));
             Triangle t2 = new Triangle(leftPos.add(new Point(0, height, 0)).mult(scale), rightPos.add(new Point(0, height, 0)).mult(scale), rightPos.mult(scale));

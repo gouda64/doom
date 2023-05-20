@@ -381,9 +381,10 @@ public class Camera {
         pos = pos.add(new Point(lookDir.x, 0, lookDir.z).mult(amt));
     }
     public void moveForBackLimited(double amt) {
-        Point moveVec = new Point(lookDir.x, 0, lookDir.z).mult(amt);
+        Point moveVec = new Point(lookDir.x, 0, lookDir.z).normalize().mult(amt);
         double lookingDist = lookingDist(pos, moveVec);
         if (lookingDist < 1) return;
+        if ((lookingDist-1)*moveVec.length() < clippingDist) return;
         pos = pos.add(moveVec);
     }
     public void moveRightLeft(double amt) {
@@ -393,6 +394,7 @@ public class Camera {
         Point moveVec = lookDir.crossProduct(new Point(0, 1, 0)).mult(amt);
         double lookingDist = lookingDist(pos, moveVec);
         if (lookingDist < 1) return;
+        if ((lookingDist-1)*moveVec.length() < clippingDist) return;
         pos = pos.add(moveVec);
     }
     public void turnRightLeft(double amt) {

@@ -33,7 +33,7 @@ public class DoomLevel {
 
     public DoomLevel(String mapFile, int width, int height, double renderDistToHeight, double scale) {//double xScale, double zScale) {
         this.scale = scale;
-        readMap(mapFile);
+        readMap(mapFile, 2, 2); //scale vs hor/ver scale serve diff purposes!!
 
         renderDist = mapHeight*renderDistToHeight;
 
@@ -54,8 +54,22 @@ public class DoomLevel {
                 Point camPos = camera.getPos().div(scale);
                 camPos.y = 0;
                 Point mMove = camPos.sub(m.getPosition()).normalize().mult(m.getSpeed());
+                System.out.println(mMove);
+
                 if (camPos.sub(m.getPosition()).length() > camera.getClippingDist()) {
-                    m.setPosition(m.getPosition().add(mMove));
+                    double height = mapHeight*m.getHeightPropToCeiling();
+                    double width = height*m.getWidthPropToHeight();
+
+                    Point rightNormal = mMove.crossProduct(new Point(0,1,0)).normalize().mult(width/2);
+                    Point leftNormal = rightNormal.mult(-1);
+                    Point rightPos = rightNormal.add(m.getPosition());
+                    Point leftPos = leftNormal.add(m.getPosition());
+
+                    if (camera.lookingDist(rightPos.mult(scale), mMove.mult(scale)) > 1 &&
+                            camera.lookingDist(leftPos.mult(scale), mMove.mult(scale)) > 1) {
+                        m.setPosition(m.getPosition().add(mMove));
+                    }
+
                     //TODO: use lookingDist, make sure can't pass through walls
                 }
 
@@ -235,14 +249,14 @@ public class DoomLevel {
         }
     }
 
-    public void readMap(String fileName) {
+    public void readMap(String fileName, double horScale, double vertScale) {
         try (BufferedReader in = new BufferedReader(new FileReader(fileName))) {
             String s;
             while ((s = in.readLine()) != null) {
                 String[] split = s.split(" ");
                 switch (split[0]) {
                     case "v" -> {
-                        vertices.add(new Point(Double.parseDouble(split[1]), 0, Double.parseDouble(split[2])));
+                        vertices.add(new Point(Double.parseDouble(split[1])*horScale, 0, Double.parseDouble(split[2])*vertScale));
                     }
                     case "e" -> {
                         Edge e = new Edge(vertices.get(Integer.parseInt(split[2])),
@@ -256,15 +270,15 @@ public class DoomLevel {
                         mapHeight = Double.parseDouble(split[1]);
                     }
                     case "m" -> {
-                        Point pos = new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]));
-                        monsters.add(new Monster(Integer.parseInt(split[1]), pos));
+                        Point pos = new Point(Double.parseDouble(split[2])*horScale, 0, Double.parseDouble(split[3])*vertScale);
+                        //monsters.add(new Monster(Integer.parseInt(split[1]), pos));
                     }
                     case "i" -> {
-                        Point pos = new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]));
+                        Point pos = new Point(Double.parseDouble(split[2])*horScale, 0, Double.parseDouble(split[3])*vertScale);
                         sprites.add(new Item(Integer.parseInt(split[1]), pos));
                     }
                     case "w" -> {
-                        Point pos = new Point(Double.parseDouble(split[2]), 0, Double.parseDouble(split[3]));
+                        Point pos = new Point(Double.parseDouble(split[2])*horScale, 0, Double.parseDouble(split[3])*vertScale);
                         sprites.add(new Weapon(Integer.parseInt(split[1]), pos));
                     }
                     case "we" -> {
@@ -272,7 +286,7 @@ public class DoomLevel {
                                 vertices.get(Integer.parseInt(split[2])));
                     }
                     case "p" -> {
-                        playerStart = new Point(Double.parseDouble(split[1]), Double.parseDouble(split[3]), Double.parseDouble(split[2]));
+                        playerStart = new Point(Double.parseDouble(split[1])*horScale, Double.parseDouble(split[3]), Double.parseDouble(split[2])*vertScale);
                     }
                     case "pv" -> {
                         playerLook = new Point(Double.parseDouble(split[1]), 0, Double.parseDouble(split[2]));

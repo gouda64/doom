@@ -56,8 +56,10 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        g.drawRect(WIDTH/2-2, HEIGHT/2-12, 4, 24);
 //        g.drawRect(WIDTH/2-12, HEIGHT/2-2, 24, 4);
 
-        drawPanelBkgd(g);
-        drawPanel(g);
+        if (active) {
+            drawPanelBkgd(g);
+            drawPanel(g);
+        }
 
     }
 
@@ -99,6 +101,18 @@ public class DoomPanel extends JPanel implements ActionListener {
             //g.setColor(Color.WHITE);
 
             if (t.texture != null) Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
+
+
+            if (t.texture != null) {
+                Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
+            }
+            else {
+                g.setColor(t.c);
+                if (t.attributes[1].contains("SHOT")) {
+                    g.setColor(Color.RED);
+                }
+                fillTriangle(g, t);
+            }
 
         }
 

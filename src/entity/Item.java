@@ -19,9 +19,9 @@ public class Item implements Sprite {
     private double widthToHeight;
     private boolean visible = true;
 
-    private static final int HEALTH = 0;
-    private static final int AMMO = 1;
-    private static final int ARMOR = 2;
+    public static final int HEALTH = 0;
+    public static final int AMMO = 1;
+    public static final int ARMOR = 2;
 
 
 
@@ -34,19 +34,18 @@ public class Item implements Sprite {
         widthToHeight = 0.5;
 
 
-
         //TODO: init textures and dimensions (not from texture, prob wouldn't work)
         if (type == HEALTH)
         {
-          texture = ImageIO.read(new File(".assets/DoomHealth.jpeg"));
+          texture = ImageIO.read(new File("./assets/DoomHealth.png"));
         }
         else if (type == AMMO)
         {
-          texture = ImageIO.read(new File(".assets/DoomAmmo.jpeg"));
+          texture = ImageIO.read(new File("./assets/DoomAmmo.png"));
         }
         else
         {
-           texture = ImageIO.read(new File(".assets/DoomArmor.jpeg"));
+           texture = ImageIO.read(new File("./assets/DoomArmor.png"));
         }
 
     }

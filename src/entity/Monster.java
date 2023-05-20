@@ -43,32 +43,32 @@ public class Monster implements Sprite {
         switch (type) {
             case ZOMBIEMAN -> {  //TODO: init textures and dimensions
                 health = 20;
-                damage = 9;
+                damage = 2;
                 fireDelay = 2500;
             }
             case IMP -> {
                 health = 60;
-                damage = 14;
+                damage = 3;
                 fireDelay = 2500;
             }
             case DEMON -> {
                 health = 140;
-                damage = 22;
+                damage = 5;
                 fireDelay = 2500;
             }
             case CACODEMON -> {
                 health = 360;
-                damage = 35;
+                damage = 7;
                 fireDelay = 1767;
             }
             case MANCUBUS -> {
                 health = 600;
-                damage = 32;
+                damage = 8;
                 fireDelay = 1767;
             }
             case SPIDER -> {
                 health = 3000;
-                damage = 18;
+                damage = 9;
                 fireDelay = 1767;
             }
         }

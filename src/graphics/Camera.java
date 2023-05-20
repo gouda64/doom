@@ -275,7 +275,6 @@ public class Camera {
 
                 newT1.texture = t.texture;
                 newT2.texture = t.texture;
-
                 newT1.pts[0] = inside[0];
                 newT1.pts[1] = inside[1];
                 newT1.pts[2] = vectorIntersectPlane(pPoint, pNormal, inside[0], outside[0]);

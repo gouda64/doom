@@ -12,6 +12,10 @@ public class Edge {
         this.v2 = v2;
     }
 
+    public double length() {
+        return v1.sub(v2).length();
+    }
+
     public boolean intersects(Edge other) {
         double epsilon = 0.00001;
 

@@ -81,8 +81,6 @@ public class DoomPanel extends JPanel implements ActionListener {
     public void draw(Graphics g) {
         List<Triangle> view = level.camera.view();
         for (Triangle t : view) {
-            //Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
-            //g.setColor(Color.WHITE);
 
             g.setColor(t.c);
 
@@ -91,6 +89,9 @@ public class DoomPanel extends JPanel implements ActionListener {
             }
 
             fillTriangle(g, t);
+
+            //graphics.Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
+            //g.setColor(Color.WHITE);
         }
 
     }

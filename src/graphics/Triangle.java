@@ -27,6 +27,7 @@ public class Triangle {
 
         this.texPts = texPts;
         this.texture = texture;
+
     }
     public Triangle(Point p1, Point p2, Point p3, Point[] texPts, String texFile) {
         pts = new Point[]{p1, p2, p3};

@@ -39,7 +39,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
-        level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 1.25, 100);
+        level = new DoomLevel("./assets/DoomBasic.txt", WIDTH, HEIGHT, 1.25, 100);
 
         timer = new Timer(17, this);
         timer.start();
@@ -84,7 +84,24 @@ public class DoomPanel extends JPanel implements ActionListener {
     public void draw(Graphics g) {
         List<Triangle> view = level.camera.view();
         for (Triangle t : view) {
+
             //g.setColor(Color.WHITE);
+
+
+            g.setColor(t.c);
+
+            if (t.attributes[1].contains("SHOT")) {
+                g.setColor(Color.RED);
+            }
+
+            fillTriangle(g, t);
+
+
+            //graphics.Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
+            //g.setColor(Color.WHITE);
+
+            if (t.texture != null) Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
+
 
             if (t.texture != null) {
                 Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
@@ -96,6 +113,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                 }
                 fillTriangle(g, t);
             }
+
         }
 
     }

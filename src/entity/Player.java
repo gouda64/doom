@@ -65,6 +65,8 @@ public class Player {
     public int getArmor(){return armor;}
     public Weapon getEquipped(){return equipped;}
 
+    public void shot(){ammo--;}
+
 
     public void damage(int HP)
     {

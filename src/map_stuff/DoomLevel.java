@@ -82,21 +82,23 @@ public class DoomLevel {
     }
 
     public void shoot() {
-        int victim = camera.lookingAt();
-        List<Triangle> tris = camera.getMesh().getAllTris();
+        if(player.getAmmo()>0) {
+            int victim = camera.lookingAt();
+            List<Triangle> tris = camera.getMesh().getAllTris();
 
-        if (tris.get(victim).attributes[0].contains("MONSTER")) {
-            tris.get(victim).attributes[1] = "SHOT";
-            if (victim%2 == 0) {
-                tris.get(victim+1).attributes[1] = "SHOT";
-            }
-            else {
-                tris.get(victim-1).attributes[1] = "SHOT";
-            }
+            if (tris.get(victim).attributes[0].contains("MONSTER")) {
+                tris.get(victim).attributes[1] = "SHOT";
+                if (victim % 2 == 0) {
+                    tris.get(victim + 1).attributes[1] = "SHOT";
+                } else {
+                    tris.get(victim - 1).attributes[1] = "SHOT";
+                }
 
-            Monster m =  monsters.get(Integer.parseInt(tris.get(victim).attributes[0].substring(8)));
-            m.shotTime = 10;
-            m.takeDamage(player.getEquipped().shoot());
+                Monster m = monsters.get(Integer.parseInt(tris.get(victim).attributes[0].substring(8)));
+                m.shotTime = 10;
+                m.takeDamage(player.getEquipped().shoot());
+                player.shot();
+            }
         }
     }
 

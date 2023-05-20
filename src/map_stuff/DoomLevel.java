@@ -33,7 +33,7 @@ public class DoomLevel {
 
     public DoomLevel(String mapFile, int width, int height, double renderDistToHeight, double scale) {//double xScale, double zScale) {
         this.scale = scale;
-        readMap(mapFile, 3, 3); //scale vs hor/ver scale serve diff purposes!!
+        readMap(mapFile, 2, 2); //scale vs hor/ver scale serve diff purposes!!
 
         renderDist = mapHeight*renderDistToHeight;
 
@@ -271,7 +271,7 @@ public class DoomLevel {
                     }
                     case "m" -> {
                         Point pos = new Point(Double.parseDouble(split[2])*horScale, 0, Double.parseDouble(split[3])*vertScale);
-                        monsters.add(new Monster(Integer.parseInt(split[1]), pos));
+                        //monsters.add(new Monster(Integer.parseInt(split[1]), pos));
                     }
                     case "i" -> {
                         Point pos = new Point(Double.parseDouble(split[2])*horScale, 0, Double.parseDouble(split[3])*vertScale);

@@ -54,8 +54,22 @@ public class DoomLevel {
                 Point camPos = camera.getPos().div(scale);
                 camPos.y = 0;
                 Point mMove = camPos.sub(m.getPosition()).normalize().mult(m.getSpeed());
+                System.out.println(mMove);
+
                 if (camPos.sub(m.getPosition()).length() > camera.getClippingDist()) {
-                    m.setPosition(m.getPosition().add(mMove));
+                    double height = mapHeight*m.getHeightPropToCeiling();
+                    double width = height*m.getWidthPropToHeight();
+
+                    Point rightNormal = mMove.crossProduct(new Point(0,1,0)).normalize().mult(width/2);
+                    Point leftNormal = rightNormal.mult(-1);
+                    Point rightPos = rightNormal.add(m.getPosition());
+                    Point leftPos = leftNormal.add(m.getPosition());
+
+                    if (camera.lookingDist(rightPos.mult(scale), mMove.mult(scale)) > 1 &&
+                            camera.lookingDist(leftPos.mult(scale), mMove.mult(scale)) > 1) {
+                        m.setPosition(m.getPosition().add(mMove));
+                    }
+
                     //TODO: use lookingDist, make sure can't pass through walls
                 }
 

@@ -39,7 +39,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
-        level = new DoomLevel("./assets/txt/DoomBasic.txt", WIDTH, HEIGHT, 1.25, 100);
+        level = new DoomLevel("./assets/txt/DoomTest.txt", WIDTH, HEIGHT, 1.25, 100);
 
         timer = new Timer(17, this);
         timer.start();

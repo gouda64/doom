@@ -38,7 +38,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
-        level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 1.5, 100);
+        level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 0.75, 100);
 
         timer = new Timer(17, this);
         timer.start();
@@ -180,6 +180,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                     case KeyEvent.VK_LEFT -> level.camera.turnRightLeft(-rotation);
                     case KeyEvent.VK_RIGHT -> level.camera.turnRightLeft(rotation);
                     case KeyEvent.VK_CONTROL -> level.shoot();
+                    case KeyEvent.VK_Z -> level.pickUp();
                     //case KeyEvent.VK_UP -> level.camera.turnUpDown(rotation);
                     //case KeyEvent.VK_DOWN -> level.camera.turnUpDown(-rotation);
                 }

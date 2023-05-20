@@ -18,6 +18,7 @@ public class DoomLevel {
     private int gameState = 0;
 
     private double mapHeight = 0;
+    private double renderDist;
     private double scale;
     private final List<Point> vertices = new ArrayList<>();
     private final List<Edge> edges = new ArrayList<>();
@@ -32,12 +33,14 @@ public class DoomLevel {
 
     public DoomLevel(String mapFile, int width, int height, double renderDistToHeight, double scale) {//double xScale, double zScale) {
         this.scale = scale;
-
         readMap(mapFile);
-        generateBackground();
+
+        renderDist = mapHeight*renderDistToHeight;
 
         camera = new Camera(width, height, new Point(playerStart.x*scale, playerStart.y, playerStart.z*scale),
-                playerLook, scale*mapHeight*renderDistToHeight);
+                playerLook, scale*renderDist);
+
+        generateBackground();
         camera.getMesh().setTris(background);
     }
 
@@ -71,6 +74,7 @@ public class DoomLevel {
     private boolean monsterSeePlayer(Monster m) {
         Edge lookEdge = new Edge(m.getPosition(), camera.getPos().div(scale));
         lookEdge.v2.y = 0;
+        if (lookEdge.length() > renderDist) return false;
         for (Edge e : edges) {
             if (lookEdge.intersects(e)) return false;
         }
@@ -93,6 +97,26 @@ public class DoomLevel {
             Monster m =  monsters.get(Integer.parseInt(tris.get(victim).attributes[0].substring(8)));
             m.shotTime = 10;
             m.takeDamage(player.getEquipped().shoot());
+        }
+    }
+
+    public void pickUp() {
+        int victim = camera.lookingAt();
+        List<Triangle> tris = camera.getMesh().getAllTris();
+
+        String[] split = tris.get(victim).attributes[0].split(" ");
+
+        if (!split[0].equals("SPRITE")) return;
+        if (split[1].equals("ITEM")) {
+            //TODO: refactor into just sprite + index with getType in sprite interface
+            Item it = (Item)sprites.get(Integer.parseInt(split[2]));
+            player.pickUpItem(it.getType());
+            it.setVisible(false);
+        }
+        else if (split[1].equals("WEAPON")) {
+            Weapon wp = (Weapon)sprites.get(Integer.parseInt(split[2]));
+            player.pickUpWeapon(wp.getType());
+            wp.setVisible(false);
         }
     }
 
@@ -138,10 +162,10 @@ public class DoomLevel {
                 }
             }
             else if (s instanceof Item) {
-                attr = "ITEM " + sprites.indexOf(s);
+                attr = "SPRITE ITEM " + sprites.indexOf(s);
             }
             else if (s instanceof Weapon) {
-                attr = "WEAPON " + sprites.indexOf(s);
+                attr = "SPRITE WEAPON " + sprites.indexOf(s);
             }
             t1.attributes[0] = attr;
             t2.attributes[0] = attr;

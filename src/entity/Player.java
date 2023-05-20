@@ -36,15 +36,24 @@ public class Player {
 
     }
 
-    public void pickUpHealth()
-    {
-        health++;
+    public void pickUpItem(int type) {
+        switch (type) {
+            case Item.HEALTH -> {
+                health++;
+            }
+            case Item.AMMO -> {
+                ammo+=10;
+            }
+            case Item.ARMOR -> {
+                armor+=10;
+            }
+        }
     }
 
     public int getInventorySize()
     {
         int a = 0;
-        while (inventory[a]!=null && a!=inventory.length)
+        while (a!=inventory.length && inventory[a]!=null)
         {
             a++;
         }
@@ -56,16 +65,6 @@ public class Player {
     public int getArmor(){return armor;}
     public Weapon getEquipped(){return equipped;}
 
-
-    public void pickUpAmmo()
-    {
-        ammo+=10;
-    }
-
-    public void pickUpArmor()
-    {
-        armor+=10;
-    }
 
     public void damage(int HP)
     {

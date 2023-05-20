@@ -19,9 +19,9 @@ public class Item implements Sprite {
     private double widthToHeight;
     private boolean visible = true;
 
-    private static final int HEALTH = 0;
-    private static final int AMMO = 1;
-    private static final int ARMOR = 2;
+    public static final int HEALTH = 0;
+    public static final int AMMO = 1;
+    public static final int ARMOR = 2;
 
 
 

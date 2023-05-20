@@ -82,13 +82,18 @@ public class Rasterizer {
                         int finU = Math.max(Math.min((int) (u * tri.texture.getWidth()), tri.texture.getWidth() - 1), 0);
                         int finV = Math.max(Math.min((int) (v * tri.texture.getHeight()), tri.texture.getHeight() - 1), 0);
                         int color = tri.texture.getRGB(tri.texture.getWidth()-finU-1, tri.texture.getHeight()-finV-1);
+
+                        t += tStep;
+
+                        if (((color & 0xff000000) >>> 24) <= 0) {
+                            continue;
+                        }
+
                         //bitwise rgb color value
                         Color c = new Color((color & 0xff0000) >> 16, (color & 0xff00) >> 8, color & 0xff);
 
                         g.setColor(c);
                         g.drawRect(width-j, height-i, 1, 1);
-
-                        t += tStep;
                     }
 
                 }

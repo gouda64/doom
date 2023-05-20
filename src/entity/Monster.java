@@ -31,7 +31,10 @@ public class Monster implements Sprite {
     {
         position = initPosition;
         timeSinceFired = 0;
-        speed = 0.5;
+        speed = 0.01;
+
+        height = 0.1;
+        widthToHeight = 0.5;
 
         this.type = type;
         switch (type) {

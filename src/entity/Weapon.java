@@ -49,6 +49,8 @@ public class Weapon implements Sprite {
     }
     public Weapon(int weaponType, Point position) throws IOException {
         this.position = position;
+        height = 0.05;
+        widthToHeight = 2;
 
         //TODO: init textures and dimensions
         type = weaponType;

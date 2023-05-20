@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
-import graphics.Rasterizer;
 import graphics.Triangle;
 import map_stuff.DoomLevel;
 
@@ -38,7 +37,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 //        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
 //                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
 
-        level = new DoomLevel("./assets/DoomBasic.txt", WIDTH, HEIGHT, 1.5, 100);
+        level = new DoomLevel("./assets/DoomTest.txt", WIDTH, HEIGHT, 1.5, 100);
 
         timer = new Timer(17, this);
         timer.start();
@@ -147,13 +146,15 @@ public class DoomPanel extends JPanel implements ActionListener {
         if (level.getGameState() == 1) {
             active = false;
             //win
+            System.out.println("win!");
         }
         else if (level.getGameState() == -1) {
             active = false;
+            System.out.println("lose!");
             //lose
         }
         else {
-            level.step();
+            level.update();
         }
     }
 
@@ -162,7 +163,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         final double rotation = 0.2;
         @Override
         public void keyPressed(KeyEvent e) {
-            if (true) {//active) {
+            if (true) {//active) { TODO: change back to active
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE -> level.camera.moveY(movement);
                     case KeyEvent.VK_SHIFT -> level.camera.moveY(-movement);
@@ -187,7 +188,7 @@ public class DoomPanel extends JPanel implements ActionListener {
     public class GMouseAdapter extends MouseAdapter {
         @Override
         public void mouseMoved(MouseEvent e) {
-            if (active) {
+            if (true) {//active) { TODO: change back to active
                 if (!firstMove) {
                     //level.camera.turnUpDown(-0.005*(e.getYOnScreen() - mouseY));
                     level.camera.turnRightLeft(.03*(e.getXOnScreen() - mouseX));

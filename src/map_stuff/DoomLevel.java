@@ -41,15 +41,20 @@ public class DoomLevel {
         camera.getMesh().setTris(background);
     }
 
-    public void step() {
+    public void update() {
         camera.getMesh().tempTris = generateSprites();
 
         for (Monster m : monsters) {
             if (monsterSeePlayer(m)) {
-                Point mLook = camera.getPos().sub(m.getPosition());
-                m.setPosition(m.getPosition().add(new Point(mLook.x, 0, mLook.z).mult(m.getSpeed()*scale)));
+                Point camPos = camera.getPos().div(scale);
+                camPos.y = 0;
+                Point mMove = camPos.sub(m.getPosition()).normalize().mult(m.getSpeed());
+                if (camPos.sub(m.getPosition()).length() > camera.getClippingDist()) {
+                    m.setPosition(m.getPosition().add(mMove));
+                    //TODO: use lookingDist, make sure can't pass through walls
+                }
 
-                m.timeSinceFired++;
+                m.timeSinceFired += 20;
                 if (m.timeSinceFired >= m.getFireDelay()) {
                     player.damage(m.getDamage());
                     m.timeSinceFired = 0;
@@ -94,7 +99,7 @@ public class DoomLevel {
         //make sure to add attributes
         List<Triangle> spriteList = new ArrayList<Triangle>();
 
-        Stream.of(sprites.stream(), monsters.stream()).flatMap(s -> s).forEach(s -> {
+        Stream.of(sprites.stream(), monsters.stream()).flatMap(v -> v).forEach(s -> {
             double height = mapHeight*s.getHeightPropToCeiling();
             double width = height*s.getWidthPropToHeight();
 
@@ -133,33 +138,7 @@ public class DoomLevel {
             gameState = 1;
         }
         camera.moveForBackLimited(amt);
-//        for (Sprite s : sprites)
-//        {
-//            if (s.getPosition().x == camera.getPos().x && (s.getPosition().z == camera.getPos().z))
-//            {
-//                if (s instanceof Item)
-//                {
-//                    switch(((Item) s).getType()) {
-//                        case 0 -> {
-//                            player.pickUpHealth();
-//                        }
-//                        case 1 -> {
-//                            player.pickUpAmmo();
-//                        }
-//                        case 2 -> {
-//                            player.pickUpArmor();
-//                        }
-//                    }
-//                }
-//                else
-//                    switch (((Weapon) s).getType())
-//                    {
-//
-//                    }
-//
-//                }
-//            }
-        }
+    }
 
     public void strafe(double amt) {
         Point pos = camera.getPos().div(scale); pos.y = 0;

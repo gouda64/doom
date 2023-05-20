@@ -9,6 +9,7 @@ public class Camera {
     private final int width;
     private final int height;
     private final double fov;
+    private final double clippingDist = 0.05;
     private final Mesh mesh;
     private final double[][] projectionMatrix;
     private Point pos;
@@ -59,6 +60,9 @@ public class Camera {
     public Point getLookDir() {
         return lookDir;
     }
+    public double getClippingDist() {
+        return clippingDist;
+    }
 
     public List<Triangle> view() {
         //10??
@@ -104,7 +108,7 @@ public class Camera {
 
                 Triangle tView = transformTriByMat(tTransformed, camMat);
 
-                Triangle[] clippedTris = triClipToPlane(new Point(0, 0, 0.1), new Point(0, 0, 1), tView);
+                Triangle[] clippedTris = triClipToPlane(new Point(0, 0, clippingDist), new Point(0, 0, 1), tView);
                 for (Triangle tri : clippedTris) {
 
                     Triangle tProjected = transformTriByMat(tri, projectionMatrix);
@@ -348,7 +352,7 @@ public class Camera {
         }
         return looking;
     }
-    private double lookingDist(Point rayO, Point rayDir) {
+    public double lookingDist(Point rayO, Point rayDir) {
         double epsilon = 0.00001; //could make it parameter but prob unnecessary
         double minT = Double.MAX_VALUE;
         for (Triangle tri : mesh.getAllTris()) {

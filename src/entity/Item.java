@@ -33,6 +33,8 @@ public class Item implements Sprite {
         height = 0.1;
         widthToHeight = 0.5;
 
+        texture = ImageIO.read(new File("./assets/DoomAmmo.png"));
+
         //TODO: init textures and dimensions (not from texture, prob wouldn't work)
         if (type == HEALTH)
         {

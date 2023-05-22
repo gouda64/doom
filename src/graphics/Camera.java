@@ -57,6 +57,13 @@ public class Camera {
         return mesh;
     }
     public Point getPos() {return pos;}
+    public void setPos(Point pos) {
+        this.pos = pos;
+    }
+    public void setLookDir(Point lookDir) {
+        this.lookDir = lookDir;
+    }
+
     public Point getLookDir() {
         return lookDir;
     }

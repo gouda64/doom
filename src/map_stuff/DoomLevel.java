@@ -74,13 +74,12 @@ public class DoomLevel {
 
                 m.timeSinceFired += 17; //should be same as timer delay
                 if (m.timeSinceFired >= m.getFireDelay()) {
-                    player.damage(m.getDamage());
+                    player.damage(m.getDamage()*100);
                     player.shotTime += 10;
                     m.timeSinceFired = 0;
                 }
             }
         }
-        //TODO: timed graphics like shoot/getting shot/monster death?
         //move monsters
         if (player.getHealth() <= 0) gameState = -1;
 
@@ -132,7 +131,6 @@ public class DoomLevel {
 
         if (!split[0].equals("SPRITE")) return;
         if (split[1].equals("ITEM")) {
-            //TODO: refactor into just sprite + index with getType in sprite interface
             Item it = (Item)sprites.get(Integer.parseInt(split[2]));
             player.pickUpItem(it.getType());
             it.setVisible(false);
@@ -253,6 +251,9 @@ public class DoomLevel {
 
     public void restart() {
         player = new Player();
+        camera.setPos(new Point(playerStart.x*scale, playerStart.y, playerStart.z*scale));
+        camera.setLookDir(playerLook);
+        gameState = 0;
     }
 
     public Point getPlayerStart() {

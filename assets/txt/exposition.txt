@@ -1,0 +1,18 @@
+You, an intrepid student,
+have been thrown into the
+sketchy depths of the HCS
+classroom. In this barren
+gray landscape only
+accented by the red of blo-
+love for Java, dotted with
+the items of your fallen
+comrades, can you survive?
+
+
+Move - WASD
+Turn - mouse or arrow keys
+Shoot - space
+Inventory - number keys
+
+
+Press enter to start

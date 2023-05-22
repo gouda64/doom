@@ -1,6 +1,8 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import java.util.List;
 
 import graphics.Rasterizer;
@@ -14,10 +16,10 @@ public class DoomPanel extends JPanel implements ActionListener {
     private DoomLevel level;
 
     private int mouseX;
-    private int mouseY;
     private boolean firstMove;
 
     private boolean active;
+    private int stage;
     
     private Timer timer;
 
@@ -30,13 +32,10 @@ public class DoomPanel extends JPanel implements ActionListener {
         this.addMouseMotionListener(new GMouseAdapter());
 
         mouseX = 0;
-        mouseY = 0;
         firstMove = true;
 
-        active = true;
-
-//        camera = new camera(WIDTH, HEIGHT, "./assets/Doom_E1M1.txt",
-//                            new Point(-3150, 100, -3150), new Point(0, 0, 1), 700);
+        active = false;
+        stage = 0; //0 is very start, 1 is options, 2 is playing
 
         level = new DoomLevel("./assets/txt/DoomBasic.txt", WIDTH, HEIGHT, 1.00, 100);
 
@@ -47,7 +46,8 @@ public class DoomPanel extends JPanel implements ActionListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        draw3D(g);
+        if (stage != 0) draw3D(g);
+        drawStartScreen(g);
 
         if (active) {
             g.setColor(Color.WHITE);
@@ -64,6 +64,7 @@ public class DoomPanel extends JPanel implements ActionListener {
     }
 
     private void drawOverlays(Graphics g) {
+        if (stage < 2) return;
         Graphics2D g2 = (Graphics2D) g;
 
         if (active && level.player.shotTime > -1) {
@@ -168,9 +169,60 @@ public class DoomPanel extends JPanel implements ActionListener {
         }
         if (level.getGameState() == -1) {
             String loseStr = "YOU LOSE";
+            String optStr = "press enter to restart";
             g.drawString(loseStr, (WIDTH-metrics.stringWidth(loseStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent());
 
+            g.setFont(new Font( "OCR A Extended", Font.BOLD, 25 ));
+            metrics = g.getFontMetrics(g.getFont());
+            g.drawString(optStr, (WIDTH-metrics.stringWidth(optStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent()+75);
         }
+    }
+    private void drawStartScreen(Graphics g) {
+        if (stage == 0) {
+            try {
+                g.drawImage(ImageIO.read(new File("./assets/img/title-screen.png")), 0, 0,
+                        WIDTH, HEIGHT, null); //TODO: edit title img
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+//            String optStr = "Press enter";
+//            g.setColor(Color.YELLOW);
+//            Font stringFont = new Font( "OCR A Extended", Font.BOLD, 40 );
+//            FontMetrics metrics = g.getFontMetrics(stringFont);
+//            g.setFont(stringFont);
+//            g.drawString(optStr, (WIDTH-metrics.stringWidth(optStr))/2, HEIGHT-40);
+        }
+        else if (stage == 1) {
+            try {
+                g.drawImage(ImageIO.read(new File("./assets/img/title-screen.png")), 0, 0,
+                        WIDTH, HEIGHT, null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            g.setColor(new Color(0.7f, 0.7f, 0.7f));
+            g.fillRect(WIDTH/2 - 110, HEIGHT/2 - 110,220, 220);
+
+            g.setColor(Color.YELLOW);
+            Font stringFont = new Font( "OCR A Extended", Font.BOLD, 10 );
+            FontMetrics metrics = g.getFontMetrics(stringFont);
+            g.setFont(stringFont);
+            int i = 1;
+            try {
+                BufferedReader br = new BufferedReader(new FileReader("./assets/txt/exposition.txt"));
+                String s;
+                while ((s = br.readLine()) != null) {
+                    g.drawString(s, (WIDTH-metrics.stringWidth(s))/2, HEIGHT/2-110+15+10*i);
+                    i++;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
     }
 
     public static void drawTriangle(Graphics g, Triangle t) {
@@ -178,7 +230,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         g.drawLine(WIDTH-(int) t.pts[0].x, HEIGHT-(int) t.pts[0].y, WIDTH-(int) t.pts[2].x, HEIGHT-(int) t.pts[2].y);
         g.drawLine(WIDTH-(int) t.pts[2].x, HEIGHT-(int) t.pts[2].y, WIDTH-(int) t.pts[1].x, HEIGHT-(int) t.pts[1].y);
     }
-    public void fillTriangle(Graphics g, Triangle t) {
+    public static void fillTriangle(Graphics g, Triangle t) {
         int[] x = {WIDTH-(int) t.pts[0].x, WIDTH-(int) t.pts[1].x, WIDTH-(int) t.pts[2].x};
         int[] y = {HEIGHT-(int) t.pts[0].y, HEIGHT-(int) t.pts[1].y, HEIGHT-(int) t.pts[2].y};
         Polygon p = new Polygon(x, y, 3);
@@ -195,11 +247,9 @@ public class DoomPanel extends JPanel implements ActionListener {
         if (level.getGameState() == 1) {
             active = false;
             //win
-            System.out.println("win!");
         }
         else if (level.getGameState() == -1) {
             active = false;
-            System.out.println("lose!");
             //lose
         }
         else {
@@ -212,10 +262,15 @@ public class DoomPanel extends JPanel implements ActionListener {
         final double rotation = 0.1;
         @Override
         public void keyPressed(KeyEvent e) {
+            if (stage == 0 || stage == 1) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER -> stage++;
+                }
+            }
             if (active) {
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_CONTROL -> level.camera.moveY(movement);
-                    case KeyEvent.VK_SHIFT -> level.camera.moveY(-movement);
+                    //case KeyEvent.VK_CONTROL -> level.camera.moveY(movement);
+                    //case KeyEvent.VK_SHIFT -> level.camera.moveY(-movement);
                     case KeyEvent.VK_D -> level.strafe(movement);//level.camera.moveRightLeft(movement);
                     case KeyEvent.VK_A -> level.strafe(-movement);//level.camera.moveRightLeft(-movement);
                     case KeyEvent.VK_W -> level.walk(movement);//level.camera.moveForBack(movement);
@@ -233,6 +288,14 @@ public class DoomPanel extends JPanel implements ActionListener {
 
                 }
             }
+            else if (stage == 2) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER -> {
+                        level.restart();
+                        active = true;
+                    }
+                }
+            }
         }
         @Override
         public void keyReleased(KeyEvent e) {
@@ -243,7 +306,7 @@ public class DoomPanel extends JPanel implements ActionListener {
     public class GMouseAdapter extends MouseAdapter {
         @Override
         public void mouseMoved(MouseEvent e) {
-            if (true) {//active) { TODO: change back to active
+            if (active) {
                 if (!firstMove) {
                     //level.camera.turnUpDown(-0.005*(e.getYOnScreen() - mouseY));
                     level.camera.turnRightLeft(.03*(e.getXOnScreen() - mouseX));
@@ -253,7 +316,6 @@ public class DoomPanel extends JPanel implements ActionListener {
                 }
             }
             mouseX = e.getXOnScreen();
-            mouseY = e.getYOnScreen();
         }
     }
 }

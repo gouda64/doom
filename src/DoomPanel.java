@@ -1,4 +1,7 @@
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -202,10 +205,10 @@ public class DoomPanel extends JPanel implements ActionListener {
             }
 
             g.setColor(new Color(0.7f, 0.7f, 0.7f));
-            g.fillRect(WIDTH/2 - 110, HEIGHT/2 - 110,220, 220);
+            g.fillRect(WIDTH/2 - 150, HEIGHT/2 - 155,300, 310);
 
             g.setColor(Color.YELLOW);
-            Font stringFont = new Font( "OCR A Extended", Font.BOLD, 10 );
+            Font stringFont = new Font( "OCR A Extended", Font.BOLD, 15);
             FontMetrics metrics = g.getFontMetrics(stringFont);
             g.setFont(stringFont);
             int i = 1;
@@ -213,7 +216,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                 BufferedReader br = new BufferedReader(new FileReader("./assets/txt/exposition.txt"));
                 String s;
                 while ((s = br.readLine()) != null) {
-                    g.drawString(s, (WIDTH-metrics.stringWidth(s))/2, HEIGHT/2-110+15+10*i);
+                    g.drawString(s, (WIDTH-metrics.stringWidth(s))/2, HEIGHT/2-155+15+15*i);
                     i++;
                 }
             } catch (IOException e) {
@@ -254,6 +257,24 @@ public class DoomPanel extends JPanel implements ActionListener {
         }
         else {
             level.update();
+        }
+    }
+
+    public static void music() {
+        try {
+            File musicPath = new File("./");
+            if(musicPath.exists()){
+                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioInput);
+                clip.start();
+            }
+            else{
+
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 

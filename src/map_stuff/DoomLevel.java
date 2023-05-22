@@ -74,7 +74,7 @@ public class DoomLevel {
 
                 m.timeSinceFired += 17; //should be same as timer delay
                 if (m.timeSinceFired >= m.getFireDelay()) {
-                    player.damage(m.getDamage()*100);
+                    player.damage(m.getDamage());
                     player.shotTime += 10;
                     m.timeSinceFired = 0;
                 }

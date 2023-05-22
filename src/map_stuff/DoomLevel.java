@@ -254,6 +254,11 @@ public class DoomLevel {
         camera.setPos(new Point(playerStart.x*scale, playerStart.y, playerStart.z*scale));
         camera.setLookDir(playerLook);
         gameState = 0;
+
+        for (int i = 0; i < monsters.size(); i++) { //could be more optimized
+            Monster m = monsters.get(i);
+            monsters.set(i, new Monster(m.getType(), m.getStartPos()));
+        }
     }
 
     public Point getPlayerStart() {
@@ -289,6 +294,17 @@ public class DoomLevel {
             background.add(t1);
             background.add(t2);
         }
+
+        Triangle t1 = new Triangle(winEdge.v1.mult(scale).add(new Point(0, 3*playerStart.y, 0)),
+                winEdge.v1.add(new Point(0, mapHeight, 0)).mult(scale),
+                winEdge.v2.mult(scale).add(new Point(0, 3*playerStart.y, 0)));
+        Triangle t2 = new Triangle(winEdge.v1.add(new Point(0, mapHeight, 0)).mult(scale),
+                winEdge.v2.add(new Point(0, mapHeight, 0)).mult(scale),
+                winEdge.v2.mult(scale).add(new Point(0, 3*playerStart.y, 0)));
+        t1.attributes[0] = "WIN";
+        t2.attributes[0] = "WIN";
+        background.add(t1);
+        background.add(t2);
     }
 
     public void readMap(String fileName, double horScale, double vertScale) {

@@ -14,6 +14,7 @@ public class Camera {
     private final double[][] projectionMatrix;
     private Point pos;
     private Point lookDir;
+    private Point startLook;
     private double yaw;
 
     public Camera(int width, int height, String mapFile, Point startPos, Point startLook, int renderDist) {
@@ -48,6 +49,7 @@ public class Camera {
 
         pos = startPos;
         lookDir = startLook;
+        this.startLook = startLook;
         yaw = 0;
 
         mesh = new Mesh(new ArrayList<>());
@@ -61,7 +63,8 @@ public class Camera {
         this.pos = pos;
     }
     public void setLookDir(Point lookDir) {
-        this.lookDir = lookDir;
+        this.startLook = lookDir;
+        yaw = 0;
     }
 
     public Point getLookDir() {
@@ -75,7 +78,7 @@ public class Camera {
         //10??
         double[][] worldMat = Matrix.translation(0, 0, 10);
 
-        lookDir = Matrix.multiplyVecMat(new Point(0, 0, 1), Matrix.rotY(yaw));
+        lookDir = Matrix.multiplyVecMat(startLook, Matrix.rotY(yaw));
 
         double[][] camMat = pointAt(pos, pos.add(lookDir), new Point(0, 1, 0))[1];
         List<Triangle> trisToDraw = cullAndProject(worldMat, camMat);
@@ -93,7 +96,7 @@ public class Camera {
         List<Triangle> trisToDraw = new ArrayList<>();
 
         for (Triangle t : mesh.getAllTris()) {
-            if (renderDist != -1) {
+            if (renderDist > 0) {
                 boolean canBreak = true;
                 for (Point p : t.pts) {
                     if (pos.sub(p).length() < renderDist) canBreak = false;
@@ -171,7 +174,7 @@ public class Camera {
     private double getLighting(Triangle t, Point normal) {
         double dp = 0;
         double dist = Math.abs(pos.sub(t.pts[0]).dotProduct(normal));
-        if (renderDist != -1) {
+        if (renderDist > 0) {
             dp = Math.max(0, 1 - Math.min((pos.sub(t.pts[0]
                             .add(t.pts[1]).add(t.pts[2]).mult(1.0/3))
                     .length())/(3.0/2*renderDist), 0.95));
@@ -179,6 +182,9 @@ public class Camera {
 //                            .add(t.pts[1]).add(t.pts[2]).mult(1.0/3))
 //                    .length())/(3.0/2*renderDist), 0.95));
             dp = Math.max(0, 1 - Math.min(dist/(5.0/4*renderDist), 0.95));
+        }
+        else {
+            dp = 0.5;
         }
         return dp;
     }

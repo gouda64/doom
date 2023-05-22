@@ -63,7 +63,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 
         drawOverlays(g);
 
-        drawEndscreens(g);
+        drawInactiveScreens(g);
     }
 
     private void drawOverlays(Graphics g) {
@@ -108,7 +108,7 @@ public class DoomPanel extends JPanel implements ActionListener {
             }
             else {
                 g.setColor(t.c);
-                if (t.attributes[1].contains("SHOT")) {
+                if (t.attributes[1].contains("SHOT") || t.attributes[0].equals("WIN")) {
                     g.setColor(Color.RED);
                 }
                 fillTriangle(g, t);
@@ -159,7 +159,9 @@ public class DoomPanel extends JPanel implements ActionListener {
 
 
     }
-    private void drawEndscreens(Graphics g) {
+    private void drawInactiveScreens(Graphics g) {
+        if (active) return;
+
         g.setColor(Color.WHITE);
         Font stringFont = new Font( "OCR A Extended", Font.BOLD, 100 );
         g.setFont(stringFont);
@@ -179,6 +181,15 @@ public class DoomPanel extends JPanel implements ActionListener {
             metrics = g.getFontMetrics(g.getFont());
             g.drawString(optStr, (WIDTH-metrics.stringWidth(optStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent()+75);
         }
+        if (level.getGameState() == 0 && stage == 2) {
+            String pauseStr = "game paused";
+            String optStr = "press enter to restart";
+            g.drawString(pauseStr, (WIDTH-metrics.stringWidth(pauseStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent());
+
+            g.setFont(new Font( "OCR A Extended", Font.BOLD, 25 ));
+            metrics = g.getFontMetrics(g.getFont());
+            g.drawString(optStr, (WIDTH-metrics.stringWidth(optStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent()+75);
+        }
     }
     private void drawStartScreen(Graphics g) {
         if (stage == 0) {
@@ -190,7 +201,7 @@ public class DoomPanel extends JPanel implements ActionListener {
             }
 
 //            String optStr = "Press enter";
-//            g.setColor(Color.YELLOW);
+//            g.setColor(Color.WHITE);
 //            Font stringFont = new Font( "OCR A Extended", Font.BOLD, 40 );
 //            FontMetrics metrics = g.getFontMetrics(stringFont);
 //            g.setFont(stringFont);
@@ -205,9 +216,9 @@ public class DoomPanel extends JPanel implements ActionListener {
             }
 
             g.setColor(new Color(0.7f, 0.7f, 0.7f));
-            g.fillRect(WIDTH/2 - 150, HEIGHT/2 - 155,300, 310);
+            g.fillRect(WIDTH/2 - 150, HEIGHT/2 - 160,300, 320);
 
-            g.setColor(Color.YELLOW);
+            g.setColor(Color.BLACK);
             Font stringFont = new Font( "OCR A Extended", Font.BOLD, 15);
             FontMetrics metrics = g.getFontMetrics(stringFont);
             g.setFont(stringFont);
@@ -216,7 +227,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                 BufferedReader br = new BufferedReader(new FileReader("./assets/txt/exposition.txt"));
                 String s;
                 while ((s = br.readLine()) != null) {
-                    g.drawString(s, (WIDTH-metrics.stringWidth(s))/2, HEIGHT/2-155+15+15*i);
+                    g.drawString(s, (WIDTH-metrics.stringWidth(s))/2, HEIGHT/2-160+15+15*i);
                     i++;
                 }
             } catch (IOException e) {
@@ -283,6 +294,17 @@ public class DoomPanel extends JPanel implements ActionListener {
         final double rotation = 0.1;
         @Override
         public void keyPressed(KeyEvent e) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_R -> {
+                    mouseX = 0;
+                    firstMove = true;
+
+                    active = false;
+                    stage = 0; //0 is very start, 1 is options, 2 is playing
+
+                    level = new DoomLevel("./assets/txt/DoomBasic.txt", WIDTH, HEIGHT, 1.00, 100);
+                }
+            }
             if (stage == 0 || stage == 1) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_ENTER -> stage++;
@@ -306,7 +328,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                     case KeyEvent.VK_4 -> level.player.equipt(4);
                     //case KeyEvent.VK_UP -> level.camera.turnUpDown(rotation);
                     //case KeyEvent.VK_DOWN -> level.camera.turnUpDown(-rotation);
-
+                    case KeyEvent.VK_P -> active = false;
                 }
             }
             else if (stage == 2) {
@@ -315,6 +337,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                         level.restart();
                         active = true;
                     }
+                    case KeyEvent.VK_P -> active = true;
                 }
             }
         }

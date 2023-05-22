@@ -40,7 +40,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 
         level = new DoomLevel("./assets/txt/DoomBasic.txt", WIDTH, HEIGHT, 1.00, 100);
 
-        timer = new Timer(17, this);
+        timer = new Timer(17, this); //60 fps
         timer.start();
     }
 
@@ -80,7 +80,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 1f));
     }
     private void drawPanelBkgd(Graphics g) {
-        g.setColor(new Color(0.8f, 0.8f, 0.8f));//new Color (210, 180, 140));
+        g.setColor(new Color(0.7f, 0.7f, 0.7f));//new Color (210, 180, 140));
         g.drawRect(0, 500,1200, HEIGHT-500);
         g.fillRect(0, 500,1200, HEIGHT-500);
         g.setColor(Color.BLACK);
@@ -131,7 +131,12 @@ public class DoomPanel extends JPanel implements ActionListener {
         {
             g2.setColor(Color.RED);
             if (level.player.getEquipped().equals(level.player.getInventory()[mult])) {
-                g2.setColor(Color.WHITE);
+                if (level.player.timeSinceFired >= level.player.getFireDelay()) {
+                    g2.setColor(Color.WHITE);
+                }
+                else {
+                    g2.setColor(Color.GRAY);
+                }
             }
             g2.drawRect(606 + mult*49, 515,45, 45);
             g2.drawString(Integer.toString(mult+1), 615 + mult*49, 555);
@@ -164,6 +169,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         if (level.getGameState() == -1) {
             String loseStr = "YOU LOSE";
             g.drawString(loseStr, (WIDTH-metrics.stringWidth(loseStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent());
+
         }
     }
 
@@ -206,7 +212,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         final double rotation = 0.1;
         @Override
         public void keyPressed(KeyEvent e) {
-            if (true) {//active) { //TODO: change back to active
+            if (active) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_CONTROL -> level.camera.moveY(movement);
                     case KeyEvent.VK_SHIFT -> level.camera.moveY(-movement);

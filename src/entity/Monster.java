@@ -34,7 +34,8 @@ public class Monster implements Sprite {
     {
         position = initPosition;
         timeSinceFired = 0;
-        speed = 0.01;
+        speed = 0.01; //TODO: monster speeds
+        //TODO: adjust difficulty
 
         height = 0.1;
         widthToHeight = 0.5;

@@ -47,6 +47,7 @@ public class DoomLevel {
     public void update() {
         camera.getMesh().tempTris = generateSprites();
         if (player.shotTime > -1) player.shotTime--;
+        player.timeSinceFired += 17;
 
         for (Monster m : monsters) {
             if (!m.isVisible()) continue;
@@ -71,7 +72,7 @@ public class DoomLevel {
                     }
                 }
 
-                m.timeSinceFired += 20;
+                m.timeSinceFired += 17; //should be same as timer delay
                 if (m.timeSinceFired >= m.getFireDelay()) {
                     player.damage(m.getDamage());
                     player.shotTime += 10;
@@ -95,7 +96,7 @@ public class DoomLevel {
     }
 
     public void shoot() {
-        if (player.getAmmo()>0) {
+        if (player.getAmmo() > 0 && player.timeSinceFired >= player.getFireDelay()) {
             player.shot();
             int victim = camera.lookingAt();
             if (victim <= 0) return;
@@ -114,9 +115,7 @@ public class DoomLevel {
                 m.takeDamage(player.getEquipped().shoot());
             }
         }
-
-
-        }
+    }
 
 
     public void pickUp() {
@@ -250,6 +249,10 @@ public class DoomLevel {
         }
 
         camera.moveRightLeftLimited(amt);
+    }
+
+    public void restart() {
+        player = new Player();
     }
 
     public Point getPlayerStart() {

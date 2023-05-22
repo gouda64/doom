@@ -46,6 +46,7 @@ public class DoomLevel {
 
     public void update() {
         camera.getMesh().tempTris = generateSprites();
+        if (player.shotTime > -1) player.shotTime--;
 
         for (Monster m : monsters) {
             if (!m.isVisible()) continue;
@@ -73,6 +74,7 @@ public class DoomLevel {
                 m.timeSinceFired += 20;
                 if (m.timeSinceFired >= m.getFireDelay()) {
                     player.damage(m.getDamage());
+                    player.shotTime += 10;
                     m.timeSinceFired = 0;
                 }
             }

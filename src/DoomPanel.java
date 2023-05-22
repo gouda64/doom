@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
 import java.util.List;
 
 import graphics.Rasterizer;
@@ -47,7 +46,8 @@ public class DoomPanel extends JPanel implements ActionListener {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        draw(g);
+
+        draw3D(g);
 
         if (active) {
             g.setColor(Color.WHITE);
@@ -57,17 +57,34 @@ public class DoomPanel extends JPanel implements ActionListener {
             drawPanelBkgd(g);
             drawPanel(g);
         }
-        if (level.getGameState() == 1) {
 
-        }
+        drawOverlays(g);
+
+        drawEndscreens(g);
     }
 
+    private void drawOverlays(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+
+        if (active && level.player.shotTime > -1) {
+            g2.setColor(Color.RED);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.25f));
+            g2.fillRect(0, 0, WIDTH, 500);
+        }
+        if (!active) {
+            g2.setColor(Color.BLACK);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.5f));
+            g2.fillRect(0, 0, WIDTH, HEIGHT);
+        }
+
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 1f));
+    }
     private void drawPanelBkgd(Graphics g) {
-        g.setColor(new Color (210, 180, 140));
-        g.drawRect(0, 500,1200, 600);
-        g.fillRect(0, 500,1200, 600);
+        g.setColor(new Color(0.8f, 0.8f, 0.8f));//new Color (210, 180, 140));
+        g.drawRect(0, 500,1200, HEIGHT-500);
+        g.fillRect(0, 500,1200, HEIGHT-500);
         g.setColor(Color.BLACK);
-        Font stringFont = new Font( "Monospaced", Font.PLAIN, 25 );
+        Font stringFont = new Font( "OCR A Extended", Font.PLAIN, 25 );
         g.setFont(stringFont);
         g.drawString("Ammo", 110, 590);
         g.drawLine(300,500,300,600);
@@ -79,8 +96,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         g.setColor(Color.WHITE);
         g.drawRect(575, 400, 50, 100);
     }
-
-    public void draw(Graphics g) {
+    public void draw3D(Graphics g) {
         List<Triangle> view = level.camera.view();
         for (Triangle t : view) {
             if (t.texture != null) {
@@ -93,17 +109,15 @@ public class DoomPanel extends JPanel implements ActionListener {
                 }
                 fillTriangle(g, t);
             }
-
         }
 
     }
-
     public void drawPanel(Graphics g){
         g.setColor(Color.RED);
         String health = Integer.toString(level.player.getHealth());
         String ammo = Integer.toString(level.player.getAmmo());
         String armor = Integer.toString(level.player.getArmor());
-        Font stringFont = new Font( "Monospaced", Font.BOLD, 45 );
+        Font stringFont = new Font( "OCR A Extended", Font.BOLD, 45 );
         g.setFont(stringFont);
         g.drawString(health + "%",400 + (3-health.length())*15,550);
         g.drawString(armor + "%",995 + (3-armor.length())*15,550);
@@ -135,6 +149,22 @@ public class DoomPanel extends JPanel implements ActionListener {
         }
 
 
+    }
+    private void drawEndscreens(Graphics g) {
+        g.setColor(Color.WHITE);
+        Font stringFont = new Font( "OCR A Extended", Font.BOLD, 100 );
+        g.setFont(stringFont);
+
+        FontMetrics metrics = g.getFontMetrics(stringFont);
+
+        if (level.getGameState() == 1) {
+            String winStr = "you win i guess";
+            g.drawString(winStr, (WIDTH-metrics.stringWidth(winStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent());
+        }
+        if (level.getGameState() == -1) {
+            String loseStr = "YOU LOSE";
+            g.drawString(loseStr, (WIDTH-metrics.stringWidth(loseStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent());
+        }
     }
 
     public static void drawTriangle(Graphics g, Triangle t) {

@@ -7,6 +7,8 @@ public class Player {
     private Weapon[] inventory;
     private Weapon equipped;
 
+    public int shotTime = -1;
+
     public Player()
     {
         health = 100;

@@ -33,7 +33,7 @@ public class DoomLevel {
 
     public DoomLevel(String mapFile, int width, int height, double renderDistToHeight, double scale) {//double xScale, double zScale) {
         this.scale = scale;
-        readMap(mapFile, 2, 2); //scale vs hor/ver scale serve diff purposes!!
+        readMap(mapFile, 1.5, 1.5); //scale vs hor/ver scale serve diff purposes!!
 
         renderDist = mapHeight*renderDistToHeight;
 
@@ -46,6 +46,8 @@ public class DoomLevel {
 
     public void update() {
         camera.getMesh().tempTris = generateSprites();
+        if (player.shotTime > -1) player.shotTime--;
+        player.timeSinceFired += 17;
 
         for (Monster m : monsters) {
             if (!m.isVisible()) continue;
@@ -54,7 +56,6 @@ public class DoomLevel {
                 Point camPos = camera.getPos().div(scale);
                 camPos.y = 0;
                 Point mMove = camPos.sub(m.getPosition()).normalize().mult(m.getSpeed());
-                System.out.println(mMove);
 
                 if (camPos.sub(m.getPosition()).length() > camera.getClippingDist()) {
                     double height = mapHeight*m.getHeightPropToCeiling();
@@ -69,18 +70,16 @@ public class DoomLevel {
                             camera.lookingDist(leftPos.mult(scale), mMove.mult(scale)) > 1) {
                         m.setPosition(m.getPosition().add(mMove));
                     }
-
-                    //TODO: use lookingDist, make sure can't pass through walls
                 }
 
-                m.timeSinceFired += 20;
+                m.timeSinceFired += 17; //should be same as timer delay
                 if (m.timeSinceFired >= m.getFireDelay()) {
                     player.damage(m.getDamage());
+                    player.shotTime += 10;
                     m.timeSinceFired = 0;
                 }
             }
         }
-        //TODO: timed graphics like shoot/getting shot/monster death?
         //move monsters
         if (player.getHealth() <= 0) gameState = -1;
 
@@ -96,9 +95,10 @@ public class DoomLevel {
     }
 
     public void shoot() {
-        if (player.getAmmo()>0) {
+        if (player.getAmmo() > 0 && player.timeSinceFired >= player.getFireDelay()) {
             player.shot();
             int victim = camera.lookingAt();
+            if (victim <= 0) return;
             List<Triangle> tris = camera.getMesh().getAllTris();
 
             if (tris.get(victim).attributes[0].contains("MONSTER")) {
@@ -114,20 +114,23 @@ public class DoomLevel {
                 m.takeDamage(player.getEquipped().shoot());
             }
         }
-
-
-        }
+    }
 
 
     public void pickUp() {
-        int victim = camera.lookingAt();
         List<Triangle> tris = camera.getMesh().getAllTris();
+        Triangle victim = tris.get(camera.lookingAt());
+        
+        Point h = camera.getLookDir().crossProduct(victim.pts[2].sub(victim.pts[0]));
+        Point q = camera.getPos().sub(victim.pts[0]).crossProduct(victim.pts[1].sub(victim.pts[0]));
+        double a = victim.pts[1].sub(victim.pts[0]).dotProduct(h);
+        double t = 1/a * victim.pts[2].sub(victim.pts[0]).dotProduct(q);
+        if (t > 150) return;
 
-        String[] split = tris.get(victim).attributes[0].split(" ");
+        String[] split = victim.attributes[0].split(" ");
 
         if (!split[0].equals("SPRITE")) return;
         if (split[1].equals("ITEM")) {
-            //TODO: refactor into just sprite + index with getType in sprite interface
             Item it = (Item)sprites.get(Integer.parseInt(split[2]));
             player.pickUpItem(it.getType());
             it.setVisible(false);
@@ -207,6 +210,18 @@ public class DoomLevel {
         if (new Edge(pos, headedTo).intersects(winEdge)) {
             gameState = 1;
         }
+        for (Sprite s : sprites) {
+            if (!s.isVisible()) continue;
+            if (s.getPosition().sub(headedTo).length() < 1) {
+                if (s instanceof Item) {
+                    player.pickUpItem(((Item) s).getType());
+                }
+                else if (s instanceof Weapon) {
+                    player.pickUpWeapon(((Weapon) s).getType());
+                }
+                s.setVisible(false);
+            }
+        }
         camera.moveForBackLimited(amt);
     }
 
@@ -218,7 +233,32 @@ public class DoomLevel {
             gameState = 1;
         }
 
+        for (Sprite s : sprites) {
+            if (!s.isVisible()) continue;
+            if (s.getPosition().sub(headedTo).length() < 1) {
+                if (s instanceof Item) {
+                    player.pickUpItem(((Item) s).getType());
+                }
+                else if (s instanceof Weapon) {
+                    player.pickUpWeapon(((Weapon) s).getType());
+                }
+                s.setVisible(false);
+            }
+        }
+
         camera.moveRightLeftLimited(amt);
+    }
+
+    public void restart() {
+        player = new Player();
+        camera.setPos(new Point(playerStart.x*scale, playerStart.y, playerStart.z*scale));
+        camera.setLookDir(playerLook);
+        gameState = 0;
+
+        for (int i = 0; i < monsters.size(); i++) { //could be more optimized
+            Monster m = monsters.get(i);
+            monsters.set(i, new Monster(m.getType(), m.getStartPos()));
+        }
     }
 
     public Point getPlayerStart() {
@@ -254,6 +294,17 @@ public class DoomLevel {
             background.add(t1);
             background.add(t2);
         }
+
+        Triangle t1 = new Triangle(winEdge.v1.mult(scale).add(new Point(0, 3*playerStart.y, 0)),
+                winEdge.v1.add(new Point(0, mapHeight, 0)).mult(scale),
+                winEdge.v2.mult(scale).add(new Point(0, 3*playerStart.y, 0)));
+        Triangle t2 = new Triangle(winEdge.v1.add(new Point(0, mapHeight, 0)).mult(scale),
+                winEdge.v2.add(new Point(0, mapHeight, 0)).mult(scale),
+                winEdge.v2.mult(scale).add(new Point(0, 3*playerStart.y, 0)));
+        t1.attributes[0] = "WIN";
+        t2.attributes[0] = "WIN";
+        background.add(t1);
+        background.add(t2);
     }
 
     public void readMap(String fileName, double horScale, double vertScale) {
@@ -278,7 +329,7 @@ public class DoomLevel {
                     }
                     case "m" -> {
                         Point pos = new Point(Double.parseDouble(split[2])*horScale, 0, Double.parseDouble(split[3])*vertScale);
-                        //monsters.add(new Monster(Integer.parseInt(split[1]), pos));
+                        monsters.add(new Monster(Integer.parseInt(split[1]), pos));
                     }
                     case "i" -> {
                         Point pos = new Point(Double.parseDouble(split[2])*horScale, 0, Double.parseDouble(split[3])*vertScale);

@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 public class Monster implements Sprite {
 
     private Point position;
+    private final Point startPos;
     private BufferedImage texture;
     private double widthToHeight;
     private double height;
@@ -33,8 +34,10 @@ public class Monster implements Sprite {
     public Monster(int type, Point initPosition)
     {
         position = initPosition;
+        startPos = initPosition;
         timeSinceFired = 0;
-        speed = 0.01;
+        speed = 0.01; //TODO: monster speeds
+        //TODO: adjust difficulty
 
         height = 0.1;
         widthToHeight = 0.5;
@@ -95,7 +98,9 @@ public class Monster implements Sprite {
         return speed;
     }
 
-
+    public Point getStartPos() {
+        return startPos;
+    }
 
     @Override
     public Point getPosition() {

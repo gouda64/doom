@@ -7,14 +7,20 @@ public class Player {
     private Weapon[] inventory;
     private Weapon equipped;
 
+    public int shotTime = -1;
+    public int timeSinceFired;
+
     public Player()
     {
         health = 100;
         ammo = 50;
         armor = 0;
+
         inventory = new Weapon[6];
         inventory[0] = new Weapon(Weapon.SLINGSHOT);
         equipped = inventory[0];
+
+        timeSinceFired = equipped.getFireDelay();
     }
 
     public void equipt(int a)
@@ -70,12 +76,23 @@ public class Player {
         return a;
     }
 
+    public Weapon[] getInventory() {
+        return inventory;
+    }
+
     public int getHealth(){return health;}
     public int getAmmo(){return ammo;}
     public int getArmor(){return armor;}
     public Weapon getEquipped(){return equipped;}
 
-    public void shot(){ammo--;}
+    public int getFireDelay() {
+        return equipped.getFireDelay();
+    }
+
+    public void shot(){
+        timeSinceFired = 0;
+        ammo--;
+    }
 
 
     public void damage(int HP)

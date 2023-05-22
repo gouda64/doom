@@ -93,7 +93,7 @@ public class Rasterizer {
                         Color c = new Color((color & 0xff0000) >> 16, (color & 0xff00) >> 8, color & 0xff);
 
                         g.setColor(c);
-                        g.drawRect(width-j, height-i, 1, 1);
+                        g.fillRect(width-j, height-i, 1, 1);
                     }
 
                 }

@@ -1,6 +1,8 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.ImageObserver;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,12 +55,20 @@ public class DoomPanel extends JPanel implements ActionListener {
             g.setColor(Color.WHITE);
             g.fillRect(WIDTH/2-2, HEIGHT/2-12, 4, 24);
             g.fillRect(WIDTH/2-12, HEIGHT/2-2, 24, 4);
-
+            drawEquipped(g);
             drawPanelBkgd(g);
             drawPanel(g);
+
+
         }
     }
 
+    public void drawEquipped(Graphics g)
+    {
+        ImageIcon a = new ImageIcon(level.player.getEquipped().getTexture());
+        Image rzImg = a.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
+        g.drawImage(rzImg, 555, 380, this);
+    }
     private void drawPanelBkgd(Graphics g) {
         g.setColor(new Color (210, 180, 140));
         g.drawRect(0, 500,1200, 600);
@@ -73,8 +83,6 @@ public class DoomPanel extends JPanel implements ActionListener {
         g.drawString("Health", 407, 590);
         g.drawString("Inventory", 680, 590);
         g.drawString("Armor", 1010, 590);
-        g.setColor(Color.WHITE);
-        g.drawRect(575, 400, 50, 100);
     }
 
     public void draw(Graphics g) {

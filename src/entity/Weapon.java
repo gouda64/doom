@@ -32,24 +32,60 @@ public class Weapon implements Sprite {
                 meanDamage = 10;
                 deviation = 5;
                 fireDelay = 2500;
+                height = 0.03;
+                widthToHeight = 0.7;
+                try {
+                    texture = ImageIO.read(new File("./assets/img/DoomSlingshot.png"));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
 
             }
             case PENCIL -> {
                 meanDamage = 70;
                 deviation = 35;
                 fireDelay = 967;
+                height = 0.03;
+                widthToHeight = 0.3;
+                try {
+                    texture = ImageIO.read(new File("./assets/img/DoomPencil.png"));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
 
             }
             case FIREFLOWER -> {
                 meanDamage = 250;
                 deviation = 200;
                 fireDelay = 2500;
+                height = 0.03;
+                widthToHeight = 1;
+                try {
+                    texture = ImageIO.read(new File("./assets/img/DoomFireflower.png"));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
 
             }
             case WAND -> {
                 meanDamage = 313;
                 deviation = 107;
                 fireDelay = 933;
+                height = 0.03;
+                widthToHeight = 0.7;
+                try {
+                    texture = ImageIO.read(new File("./assets/img/DoomWand.png"));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
 
             }
         }

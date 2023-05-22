@@ -33,7 +33,7 @@ public class DoomLevel {
 
     public DoomLevel(String mapFile, int width, int height, double renderDistToHeight, double scale) {//double xScale, double zScale) {
         this.scale = scale;
-        readMap(mapFile, 2, 2); //scale vs hor/ver scale serve diff purposes!!
+        readMap(mapFile, 1.5, 1.5); //scale vs hor/ver scale serve diff purposes!!
 
         renderDist = mapHeight*renderDistToHeight;
 
@@ -54,7 +54,6 @@ public class DoomLevel {
                 Point camPos = camera.getPos().div(scale);
                 camPos.y = 0;
                 Point mMove = camPos.sub(m.getPosition()).normalize().mult(m.getSpeed());
-                System.out.println(mMove);
 
                 if (camPos.sub(m.getPosition()).length() > camera.getClippingDist()) {
                     double height = mapHeight*m.getHeightPropToCeiling();
@@ -212,6 +211,18 @@ public class DoomLevel {
         if (new Edge(pos, headedTo).intersects(winEdge)) {
             gameState = 1;
         }
+        for (Sprite s : sprites) {
+            if (!s.isVisible()) continue;
+            if (s.getPosition().sub(headedTo).length() < 1) {
+                if (s instanceof Item) {
+                    player.pickUpItem(((Item) s).getType());
+                }
+                else if (s instanceof Weapon) {
+                    player.pickUpWeapon(((Weapon) s).getType());
+                }
+                s.setVisible(false);
+            }
+        }
         camera.moveForBackLimited(amt);
     }
 
@@ -221,6 +232,19 @@ public class DoomLevel {
         Point headedTo = pos.add(lookDir.crossProduct(new Point(0, 1, 0)).mult(amt/scale));
         if (new Edge(pos, headedTo).intersects(winEdge)) {
             gameState = 1;
+        }
+
+        for (Sprite s : sprites) {
+            if (!s.isVisible()) continue;
+            if (s.getPosition().sub(headedTo).length() < 1) {
+                if (s instanceof Item) {
+                    player.pickUpItem(((Item) s).getType());
+                }
+                else if (s instanceof Weapon) {
+                    player.pickUpWeapon(((Weapon) s).getType());
+                }
+                s.setVisible(false);
+            }
         }
 
         camera.moveRightLeftLimited(amt);
@@ -283,7 +307,7 @@ public class DoomLevel {
                     }
                     case "m" -> {
                         Point pos = new Point(Double.parseDouble(split[2])*horScale, 0, Double.parseDouble(split[3])*vertScale);
-                        //monsters.add(new Monster(Integer.parseInt(split[1]), pos));
+                        monsters.add(new Monster(Integer.parseInt(split[1]), pos));
                     }
                     case "i" -> {
                         Point pos = new Point(Double.parseDouble(split[2])*horScale, 0, Double.parseDouble(split[3])*vertScale);

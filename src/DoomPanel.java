@@ -57,6 +57,9 @@ public class DoomPanel extends JPanel implements ActionListener {
             drawPanelBkgd(g);
             drawPanel(g);
         }
+        if (level.getGameState() == 1) {
+
+        }
     }
 
     private void drawPanelBkgd(Graphics g) {
@@ -169,11 +172,11 @@ public class DoomPanel extends JPanel implements ActionListener {
     }
 
     public class GKeyAdapter extends KeyAdapter {
-        final double movement = 50;
-        final double rotation = 0.2;
+        final double movement = 25;
+        final double rotation = 0.1;
         @Override
         public void keyPressed(KeyEvent e) {
-            if (true) {//active) { TODO: change back to active
+            if (true) {//active) { //TODO: change back to active
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_CONTROL -> level.camera.moveY(movement);
                     case KeyEvent.VK_SHIFT -> level.camera.moveY(-movement);
@@ -184,7 +187,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                     case KeyEvent.VK_LEFT -> level.camera.turnRightLeft(-rotation);
                     case KeyEvent.VK_RIGHT -> level.camera.turnRightLeft(rotation);
                     case KeyEvent.VK_SPACE -> level.shoot();
-                    case KeyEvent.VK_Z -> level.pickUp();
+                    //case KeyEvent.VK_Z -> level.pickUp();
                     case KeyEvent.VK_1 -> level.player.equipt(1);
                     case KeyEvent.VK_2 -> level.player.equipt(2);
                     case KeyEvent.VK_3 -> level.player.equipt(3);

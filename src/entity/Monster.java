@@ -51,6 +51,8 @@ public class Monster implements Sprite {
                 health = 20;
                 damage = 2;
                 fireDelay = 2500;
+                height = 0.1;
+                widthToHeight = 0.75;
                 try {
 
                         texture = ImageIO.read(new File("./assets/img/DoomZombie.png"));
@@ -65,6 +67,8 @@ public class Monster implements Sprite {
                 health = 60;
                 damage = 3;
                 fireDelay = 2500;
+                height = 0.1;
+                widthToHeight = 0.5;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomImp.png"));
@@ -79,6 +83,8 @@ public class Monster implements Sprite {
                 health = 140;
                 damage = 5;
                 fireDelay = 2500;
+                height = 0.1;
+                widthToHeight = 0.75;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomDemon.png"));
@@ -93,6 +99,8 @@ public class Monster implements Sprite {
                 health = 360;
                 damage = 7;
                 fireDelay = 1767;
+                height = 0.15;
+                widthToHeight = 0.75;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomCocademon.png"));
@@ -107,6 +115,8 @@ public class Monster implements Sprite {
                 health = 600;
                 damage = 8;
                 fireDelay = 1767;
+                height = 0.1;
+                widthToHeight = 0.9;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomMancubus.png"));
@@ -121,6 +131,8 @@ public class Monster implements Sprite {
                 health = 3000;
                 damage = 9;
                 fireDelay = 1767;
+                height = 0.1;
+                widthToHeight = 1.75;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomSpider.png"));

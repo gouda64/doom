@@ -94,11 +94,11 @@ public class DoomLevel {
         return true;
     }
 
-    public void shoot() {
+    public boolean shoot() {
         if (player.getAmmo() > 0 && player.timeSinceFired >= player.getFireDelay()) {
             player.shot();
             int victim = camera.lookingAt();
-            if (victim <= 0) return;
+            if (victim <= 0) return true;
             List<Triangle> tris = camera.getMesh().getAllTris();
 
             if (tris.get(victim).attributes[0].contains("MONSTER")) {
@@ -113,7 +113,9 @@ public class DoomLevel {
                 m.shotTime = 10;
                 m.takeDamage(player.getEquipped().shoot());
             }
+            return true;
         }
+        return false;
     }
 
 

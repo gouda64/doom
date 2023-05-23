@@ -1,19 +1,27 @@
-You, an intrepid student,
-have been thrown into the
-sketchy depths of the HCS
-classroom. In this barren
-gray landscape accented
-only by the red of blo-
-love for Java, armed with
-the items of your fallen
+You, an intrepid student, have been thrown into the
+sketchy depths of the HCS classroom. In this barren
+gray landscape accented only by the red of blo-love
+for Java, armed with the items of your fallen
 comrades, can you survive?
 
-Red marks the exit
-Move - WASD
-Turn - mouse or arrow keys
+Red marks the exit!
+The monsters hurt you - if your
+health gets to 0, you die.
+Walk into items to pick them up
+    - Potions heal 2 health
+    - Ammo give 10 ammo
+    - Chestplates give 10 armor
+    - Weapons are added to your inventory
+Later weapons do more damage, and the equipped
+inventory slot will be white when the weapon
+is ready to fire
+
+Move/strafe - WASD
+Turn - mouse or left and right arrow keys
 Shoot - space
-Inventory - number keys
+Switch equipped weapon - number keys
+
 Toggle pause - p
-Full reset - r
+Full reset - r (please do for the next player)
 
 Press enter to start

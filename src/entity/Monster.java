@@ -3,6 +3,9 @@ package entity;
 import graphics.Point;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class Monster implements Sprite {
 
@@ -48,31 +51,85 @@ public class Monster implements Sprite {
                 health = 20;
                 damage = 2;
                 fireDelay = 2500;
+                try {
+
+                        texture = ImageIO.read(new File("./assets/img/DoomZombie.png"));
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
             case IMP -> {
                 health = 60;
                 damage = 3;
                 fireDelay = 2500;
+                try {
+
+                    texture = ImageIO.read(new File("./assets/img/DoomImp.png"));
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
             case DEMON -> {
                 health = 140;
                 damage = 5;
                 fireDelay = 2500;
+                try {
+
+                    texture = ImageIO.read(new File("./assets/img/DoomDemon.png"));
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
             case CACODEMON -> {
                 health = 360;
                 damage = 7;
                 fireDelay = 1767;
+                try {
+
+                    texture = ImageIO.read(new File("./assets/img/DoomCocademon.png"));
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
             case MANCUBUS -> {
                 health = 600;
                 damage = 8;
                 fireDelay = 1767;
+                try {
+
+                    texture = ImageIO.read(new File("./assets/img/DoomMancubus.png"));
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
             case SPIDER -> {
                 health = 3000;
                 damage = 9;
                 fireDelay = 1767;
+                try {
+
+                    texture = ImageIO.read(new File("./assets/img/DoomSpider.png"));
+
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
             }
         }
     }

@@ -31,7 +31,7 @@ public class Weapon implements Sprite {
             case SLINGSHOT -> {
                 meanDamage = 10;
                 deviation = 5;
-                fireDelay = 2500;
+                fireDelay = 500;
                 height = 0.03;
                 widthToHeight = 0.7;
                 try {
@@ -46,7 +46,7 @@ public class Weapon implements Sprite {
             case PENCIL -> {
                 meanDamage = 70;
                 deviation = 35;
-                fireDelay = 967;
+                fireDelay = 600;
                 height = 0.03;
                 widthToHeight = 0.3;
                 try {
@@ -61,7 +61,7 @@ public class Weapon implements Sprite {
             case FIREFLOWER -> {
                 meanDamage = 250;
                 deviation = 200;
-                fireDelay = 2500;
+                fireDelay = 500;
                 height = 0.03;
                 widthToHeight = 1;
                 try {
@@ -76,7 +76,7 @@ public class Weapon implements Sprite {
             case WAND -> {
                 meanDamage = 313;
                 deviation = 107;
-                fireDelay = 933;
+                fireDelay = 400;
                 height = 0.03;
                 widthToHeight = 0.7;
                 try {
@@ -101,7 +101,7 @@ public class Weapon implements Sprite {
             case SLINGSHOT -> {
                 meanDamage = 10;
                 deviation = 5;
-                fireDelay = 2500;
+                fireDelay = 500;
                 height = 0.03;
                 widthToHeight = 0.7;
                 try {
@@ -115,7 +115,7 @@ public class Weapon implements Sprite {
             case PENCIL -> {
                 meanDamage = 70;
                 deviation = 35;
-                fireDelay = 967;
+                fireDelay = 600;
                 height = 0.03;
                 widthToHeight = 0.3;
                 try {
@@ -130,7 +130,7 @@ public class Weapon implements Sprite {
             case FIREFLOWER -> {
                 meanDamage = 250;
                 deviation = 200;
-                fireDelay = 2500;
+                fireDelay = 500;
                 height = 0.03;
                 widthToHeight = 1;
                 try {
@@ -144,7 +144,7 @@ public class Weapon implements Sprite {
             case WAND -> {
                 meanDamage = 313;
                 deviation = 107;
-                fireDelay = 933;
+                fireDelay = 400;
                 height = 0.03;
                 widthToHeight = 0.7;
                 try {

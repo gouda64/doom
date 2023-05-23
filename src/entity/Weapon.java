@@ -29,7 +29,7 @@ public class Weapon implements Sprite {
         type = weaponType;
         switch (type) {
             case SLINGSHOT -> {
-                meanDamage = 10;
+                meanDamage = 20;
                 deviation = 5;
                 fireDelay = 400;
                 height = 0.03;
@@ -95,11 +95,11 @@ public class Weapon implements Sprite {
         height = 0.05;
         widthToHeight = 2;
 
-        //TODO: init textures and dimensions
+
         type = weaponType;
         switch (type) {
             case SLINGSHOT -> {
-                meanDamage = 10;
+                meanDamage = 20;
                 deviation = 5;
                 fireDelay = 400;
                 height = 0.03;

@@ -42,12 +42,10 @@ public class Monster implements Sprite {
         speed = 0.01; //TODO: monster speeds
         //TODO: adjust difficulty
 
-        height = 0.1;
-        widthToHeight = 0.5;
 
         this.type = type;
         switch (type) {
-            case ZOMBIEMAN -> {  //TODO: init textures and dimensions
+            case ZOMBIEMAN -> {
                 health = 20;
                 damage = 2;
                 fireDelay = 2500;

@@ -1,16 +1,15 @@
 package graphics;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.IntStream;
+import java.util.List;
 
 public class Rasterizer {
-    public static void drawTexTriangle(Graphics g, Triangle tri, int width, int height) {
+    public static void drawTexTriangle(Graphics g, Triangle tri, int width, int height, List<Color> overlays) {
+        Graphics2D g2 = (Graphics2D) g;
+
         Point[] ptsClone = tri.pts.clone();
         int[] sortedIndices = IntStream.range(0, ptsClone.length)
                 .boxed().sorted(Comparator.comparingDouble(i -> ptsClone[i].y))
@@ -94,6 +93,13 @@ public class Rasterizer {
 
                         g.setColor(c);
                         g.fillRect(width-j, height-i, 1, 1);
+
+                        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.25f));
+                        for (Color over : overlays) {
+                            g2.setColor(over);
+                            g2.fillRect(width-j, height-i, 1, 1);
+                        }
+                        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 1f));
                     }
 
                 }

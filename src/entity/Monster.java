@@ -27,20 +27,19 @@ public class Monster implements Sprite {
     public int shotTime = -1;
 
     private int type;
-    private static final int ZOMBIEMAN = 0;
-    private static final int IMP = 1;
-    private static final int DEMON = 2;
-    private static final int CACODEMON = 3;
-    private static final int MANCUBUS = 4;
-    private static final int SPIDER = 5;
+    private static final int ZOMBIEMAN = 0; //priya
+    private static final int IMP = 1; //jen
+    private static final int DEMON = 2; //melanie
+    private static final int CACODEMON = 3; //erica
+    private static final int MANCUBUS = 4; //arnav
+    private static final int SPIDER = 5; //mr feinberg
 
     public Monster(int type, Point initPosition)
     {
         position = initPosition;
         startPos = initPosition;
         timeSinceFired = 0;
-        speed = 0.01; //TODO: monster speeds
-        //TODO: adjust difficulty
+        speed = 0.05;
 
 
         this.type = type;
@@ -51,10 +50,9 @@ public class Monster implements Sprite {
                 fireDelay = 2500;
                 height = 0.1;
                 widthToHeight = 0.75;
+                speed = 0.05;
                 try {
-
-                        texture = ImageIO.read(new File("./assets/img/DoomZombie.png"));
-
+                    texture = ImageIO.read(new File("./assets/img/DoomZombie.png"));
                 }
                 catch (Exception e)
                 {
@@ -67,6 +65,7 @@ public class Monster implements Sprite {
                 fireDelay = 2500;
                 height = 0.1;
                 widthToHeight = 0.5;
+                speed = 0.05;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomImp.png"));
@@ -83,6 +82,7 @@ public class Monster implements Sprite {
                 fireDelay = 2500;
                 height = 0.1;
                 widthToHeight = 0.75;
+                speed = 0.04;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomDemon.png"));
@@ -99,6 +99,7 @@ public class Monster implements Sprite {
                 fireDelay = 1767;
                 height = 0.15;
                 widthToHeight = 0.75;
+                speed = 0.03;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomCocademon.png"));
@@ -115,6 +116,7 @@ public class Monster implements Sprite {
                 fireDelay = 1767;
                 height = 0.1;
                 widthToHeight = 0.9;
+                speed = 0.04;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomMancubus.png"));
@@ -131,6 +133,7 @@ public class Monster implements Sprite {
                 fireDelay = 1767;
                 height = 0.1;
                 widthToHeight = 1.75;
+                speed = 0.01;
                 try {
 
                     texture = ImageIO.read(new File("./assets/img/DoomSpider.png"));

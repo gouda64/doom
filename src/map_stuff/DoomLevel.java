@@ -47,7 +47,7 @@ public class DoomLevel {
     public void update() {
         camera.getMesh().tempTris = generateSprites();
         if (player.shotTime > -1) player.shotTime--;
-        player.timeSinceFired += 17;
+        if (Integer.MAX_VALUE - player.timeSinceFired > 17) player.timeSinceFired += 17;
 
         for (Monster m : monsters) {
             if (!m.isVisible()) continue;
@@ -110,7 +110,7 @@ public class DoomLevel {
                 }
 
                 Monster m = monsters.get(Integer.parseInt(tris.get(victim).attributes[0].substring(8)));
-                m.shotTime = 10;
+                m.shotTime = 5;
                 m.takeDamage(player.getEquipped().shoot());
             }
             return true;

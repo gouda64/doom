@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import graphics.Rasterizer;
@@ -15,6 +16,8 @@ import map_stuff.DoomLevel;
 public class DoomPanel extends JPanel implements ActionListener {
     static final int WIDTH = 1200;
     static final int HEIGHT = 600;
+
+    private boolean sound = true;
 
     private DoomLevel level;
     private Clip bkgMusic;
@@ -39,7 +42,7 @@ public class DoomPanel extends JPanel implements ActionListener {
         firstMove = true;
 
         active = false;
-        stage = 0; //0 is very start, 1 is options, 2 is playing
+        stage = 0; //0 is very start, 1 is options, 2+ is playing
 
         level = new DoomLevel("./assets/txt/DoomBasic.txt", WIDTH, HEIGHT, 1.00, 100);
 
@@ -87,9 +90,12 @@ public class DoomPanel extends JPanel implements ActionListener {
     }
     public void drawEquipped(Graphics g)
     {
-        ImageIcon a = new ImageIcon(level.player.getEquipped().getTexture());
-        Image rzImg = a.getImage().getScaledInstance(100, 150, Image.SCALE_SMOOTH);
-        g.drawImage(rzImg, 555, 380, this);
+        if (level.player.timeSinceFired < 17*7) {
+            g.drawImage(level.player.getEquipped().getTexture(), 555, 350, 100, 150,null);
+        }
+        else {
+            g.drawImage(level.player.getEquipped().getTexture(), 555, 390, 100, 150,null);
+        }
     }
     private void drawPanelBkgd(Graphics g) {
         g.setColor(new Color(0.7f, 0.7f, 0.7f));//new Color (210, 180, 140));
@@ -110,7 +116,13 @@ public class DoomPanel extends JPanel implements ActionListener {
         List<Triangle> view = level.camera.view();
         for (Triangle t : view) {
             if (t.texture != null) {
-                Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT);
+                List<Color> overlays = new ArrayList<>();
+
+                overlays.add(t.c);
+                if (t.attributes[1].contains("SHOT")) {
+                    overlays.add(Color.RED);
+                }
+                Rasterizer.drawTexTriangle(g, t, WIDTH, HEIGHT, overlays);
             }
             else {
                 g.setColor(t.c);
@@ -174,34 +186,31 @@ public class DoomPanel extends JPanel implements ActionListener {
 
         FontMetrics metrics = g.getFontMetrics(stringFont);
 
+        String mainStr = ""; String optStr = "";
+
         if (level.getGameState() == 1) {
-            String winStr = "you win i guess";
-            g.drawString(winStr, (WIDTH-metrics.stringWidth(winStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent());
+            mainStr = "you win i guess";
+            if (stage == 2) optStr = "press enter to go to next level";
         }
         if (level.getGameState() == -1) {
-            String loseStr = "YOU LOSE";
-            String optStr = "press enter to restart";
-            g.drawString(loseStr, (WIDTH-metrics.stringWidth(loseStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent());
-
-            g.setFont(new Font( "OCR A Extended", Font.BOLD, 25 ));
-            metrics = g.getFontMetrics(g.getFont());
-            g.drawString(optStr, (WIDTH-metrics.stringWidth(optStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent()+75);
+            mainStr = "YOU LOSE";
+            optStr = "press enter to restart";
         }
         if (level.getGameState() == 0 && stage == 2) {
-            String pauseStr = "game paused";
-            String optStr = "press enter to restart";
-            g.drawString(pauseStr, (WIDTH-metrics.stringWidth(pauseStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent());
-
-            g.setFont(new Font( "OCR A Extended", Font.BOLD, 25 ));
-            metrics = g.getFontMetrics(g.getFont());
-            g.drawString(optStr, (WIDTH-metrics.stringWidth(optStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent()+75);
+            mainStr = "game paused";
+            optStr = "press enter to restart";
         }
+        g.drawString(mainStr, (WIDTH-metrics.stringWidth(mainStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent());
+
+        g.setFont(new Font( "OCR A Extended", Font.BOLD, 25 ));
+        metrics = g.getFontMetrics(g.getFont());
+        g.drawString(optStr, (WIDTH-metrics.stringWidth(optStr))/2, (HEIGHT-metrics.getHeight())/2+metrics.getAscent()+75);
     }
     private void drawStartScreen(Graphics g) {
         if (stage == 0) {
             try {
                 g.drawImage(ImageIO.read(new File("./assets/img/title-screen.png")), 0, 0,
-                        WIDTH, HEIGHT, null); //TODO: edit title img
+                        WIDTH, HEIGHT, null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -266,14 +275,20 @@ public class DoomPanel extends JPanel implements ActionListener {
         //update game here
         if (level.getGameState() == 1) {
             active = false;
-            bkgMusic.stop();
-            bkgMusic.flush();
+            if (sound) {
+                bkgMusic.stop();
+                bkgMusic.flush();
+            }
+            playSound("./assets/sound/win.wav");
             //win
         }
         else if (level.getGameState() == -1) {
             active = false;
-            bkgMusic.stop();
-            bkgMusic.flush();
+            if (sound) {
+                bkgMusic.stop();
+                bkgMusic.flush();
+            }
+            playSound("./assets/sound/lose.wav");
             //lose
         }
         else {
@@ -281,7 +296,8 @@ public class DoomPanel extends JPanel implements ActionListener {
         }
     }
 
-    public static void sound(String filePath) {
+    public void playSound(String filePath) {
+        if (!sound) return;
         try {
             AudioInputStream audioInput = AudioSystem.getAudioInputStream(new File(filePath));
             Clip clip = AudioSystem.getClip();
@@ -290,6 +306,19 @@ public class DoomPanel extends JPanel implements ActionListener {
         }
         catch (Exception e){
             e.printStackTrace();
+        }
+    }
+    public void setBkgMusic(String filePath) {
+        if (!sound) return;
+        try {
+            AudioInputStream audioInput = AudioSystem.getAudioInputStream(new File(filePath));
+            bkgMusic = AudioSystem.getClip();
+            bkgMusic.open(audioInput);
+            bkgMusic.start();
+            bkgMusic.loop(Clip.LOOP_CONTINUOUSLY);
+        }
+        catch (Exception err){
+            err.printStackTrace();
         }
     }
 
@@ -308,29 +337,26 @@ public class DoomPanel extends JPanel implements ActionListener {
 
                     level = new DoomLevel("./assets/txt/DoomBasic.txt", WIDTH, HEIGHT, 1.00, 100);
 
-                    bkgMusic.stop();
-                    bkgMusic.flush();
+                    if (sound) {
+                        bkgMusic.stop();
+                        bkgMusic.flush();
+                    }
                 }
             }
             if (stage == 0) {
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_ENTER -> stage++;
+                    case KeyEvent.VK_ENTER -> {
+                        stage++;
+                        playSound("./assets/sound/dssgcock.wav");
+                    }
                 }
             }
             else if (stage == 1) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_ENTER -> {
                         stage++;
-                        try {
-                            AudioInputStream audioInput = AudioSystem.getAudioInputStream(new File("./assets/sound/doom-e1m1.wav"));
-                            bkgMusic = AudioSystem.getClip();
-                            bkgMusic.open(audioInput);
-                            bkgMusic.start();
-                            bkgMusic.loop(Clip.LOOP_CONTINUOUSLY);
-                        }
-                        catch (Exception err){
-                            err.printStackTrace();
-                        }
+                        playSound("./assets/sound/dssgcock.wav");
+                        setBkgMusic("./assets/sound/d_e1m1.wav");
                     }
                 }
             }
@@ -345,30 +371,55 @@ public class DoomPanel extends JPanel implements ActionListener {
                     case KeyEvent.VK_LEFT -> level.camera.turnRightLeft(-rotation);
                     case KeyEvent.VK_RIGHT -> level.camera.turnRightLeft(rotation);
                     case KeyEvent.VK_SPACE -> {
-                        if (level.shoot()) sound("./assets/sound/dspunch.wav");
+                        if (level.shoot()) playSound("./assets/sound/dspunch.wav");
                     }
                     //case KeyEvent.VK_Z -> level.pickUp();
-                    case KeyEvent.VK_1 -> level.player.equipt(1);
-                    case KeyEvent.VK_2 -> level.player.equipt(2);
-                    case KeyEvent.VK_3 -> level.player.equipt(3);
-                    case KeyEvent.VK_4 -> level.player.equipt(4);
+                    case KeyEvent.VK_1 -> {
+                        playSound("./assets/sound/dswpnup.wav");
+                        level.player.equipt(1);
+                    }
+                    case KeyEvent.VK_2 -> {
+                        playSound("./assets/sound/dswpnup.wav");
+                        level.player.equipt(2);
+                    }
+                    case KeyEvent.VK_3 -> {
+                        playSound("./assets/sound/dswpnup.wav");
+                        level.player.equipt(3);
+                    }
+                    case KeyEvent.VK_4 -> {
+                        playSound("./assets/sound/dswpnup.wav");
+                        level.player.equipt(4);
+                    }
                     //case KeyEvent.VK_UP -> level.camera.turnUpDown(rotation);
                     //case KeyEvent.VK_DOWN -> level.camera.turnUpDown(-rotation);
                     case KeyEvent.VK_P -> {
-                        bkgMusic.stop();
+                        playSound("./assets/sound/dssgcock.wav");
+                        if (sound) bkgMusic.stop();
                         active = false;
                     }
                 }
             }
-            else if (stage == 2) {
+            else if (stage >= 2) { //if there's more than two levels you can make a loop or smth
                 int keyCode = e.getKeyCode();
                 if (keyCode == KeyEvent.VK_ENTER && level.getGameState() != 1) {
+                    playSound("./assets/sound/dssgcock.wav");
                     level.restart();
-                    bkgMusic.flush();
-                    bkgMusic.start();
+                    if (sound) {
+                        bkgMusic.flush();
+                        bkgMusic.start();
+                    }
                     active = true;
-                } else if (keyCode == KeyEvent.VK_P && level.getGameState() == 0) {
-                    bkgMusic.start();
+                }
+                else if (stage == 2 && keyCode == KeyEvent.VK_ENTER && level.getGameState() == 1) {
+                    level = new DoomLevel("./assets/txt/DoomTest.txt", WIDTH, HEIGHT, 1.00, 100);
+                    setBkgMusic("./assets/sound/d_e1m2.wav");
+                    active = true;
+                    playSound("./assets/sound/dssgcock.wav");
+                    stage++;
+                }
+                else if (keyCode == KeyEvent.VK_P && level.getGameState() == 0) {
+                    playSound("./assets/sound/dssgcock.wav");
+                    if (sound) bkgMusic.start();
                     active = true;
                 }
             }
@@ -385,7 +436,7 @@ public class DoomPanel extends JPanel implements ActionListener {
             if (active) {
                 if (!firstMove) {
                     //level.camera.turnUpDown(-0.005*(e.getYOnScreen() - mouseY));
-                    level.camera.turnRightLeft(.03*(e.getXOnScreen() - mouseX));
+                    level.camera.turnRightLeft(.01*(e.getXOnScreen() - mouseX));
                 }
                 else {
                     firstMove = false;

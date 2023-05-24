@@ -23,10 +23,13 @@ public class Player {
         timeSinceFired = equipped.getFireDelay();
     }
 
-    public void equipt(int a)
+    public boolean equipt(int a)
     {
-        if (inventory[a-1] !=null)
-        equipped = inventory[a-1];
+        if (inventory[a-1] !=null){
+            equipped = inventory[a-1];
+            return true;
+        }
+        return false;
     }
 
     public void pickUpWeapon(int type)

@@ -375,20 +375,16 @@ public class DoomPanel extends JPanel implements ActionListener {
                     }
                     //case KeyEvent.VK_Z -> level.pickUp();
                     case KeyEvent.VK_1 -> {
-                        playSound("./assets/sound/dswpnup.wav");
-                        level.player.equipt(1);
+                        if (level.player.equipt(1)) playSound("./assets/sound/dswpnup.wav");
                     }
                     case KeyEvent.VK_2 -> {
-                        playSound("./assets/sound/dswpnup.wav");
-                        level.player.equipt(2);
+                        if (level.player.equipt(2)) playSound("./assets/sound/dswpnup.wav");
                     }
                     case KeyEvent.VK_3 -> {
-                        playSound("./assets/sound/dswpnup.wav");
-                        level.player.equipt(3);
+                        if (level.player.equipt(3)) playSound("./assets/sound/dswpnup.wav");
                     }
                     case KeyEvent.VK_4 -> {
-                        playSound("./assets/sound/dswpnup.wav");
-                        level.player.equipt(4);
+                        if (level.player.equipt(4)) playSound("./assets/sound/dswpnup.wav");
                     }
                     //case KeyEvent.VK_UP -> level.camera.turnUpDown(rotation);
                     //case KeyEvent.VK_DOWN -> level.camera.turnUpDown(-rotation);
@@ -411,7 +407,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                     active = true;
                 }
                 else if (stage == 2 && keyCode == KeyEvent.VK_ENTER && level.getGameState() == 1) {
-                    level = new DoomLevel("./assets/txt/DoomTest.txt", WIDTH, HEIGHT, 1.00, 100);
+                    level = new DoomLevel("./assets/txt/DoomLevel2.txt", WIDTH, HEIGHT, 1.00, 100);
                     setBkgMusic("./assets/sound/d_e1m2.wav");
                     active = true;
                     playSound("./assets/sound/dssgcock.wav");

@@ -411,7 +411,7 @@ public class DoomPanel extends JPanel implements ActionListener {
                     active = true;
                 }
                 else if (stage == 2 && keyCode == KeyEvent.VK_ENTER && level.getGameState() == 1) {
-                    level = new DoomLevel("./assets/txt/DoomTest.txt", WIDTH, HEIGHT, 1.00, 100);
+                    level = new DoomLevel("./assets/txt/DoomLevel2.txt", WIDTH, HEIGHT, 1.00, 100);
                     setBkgMusic("./assets/sound/d_e1m2.wav");
                     active = true;
                     playSound("./assets/sound/dssgcock.wav");

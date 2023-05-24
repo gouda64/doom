@@ -215,12 +215,12 @@ public class DoomPanel extends JPanel implements ActionListener {
                 e.printStackTrace();
             }
 
-//            String optStr = "Press enter";
-//            g.setColor(Color.WHITE);
-//            Font stringFont = new Font( "OCR A Extended", Font.BOLD, 40 );
-//            FontMetrics metrics = g.getFontMetrics(stringFont);
-//            g.setFont(stringFont);
-//            g.drawString(optStr, (WIDTH-metrics.stringWidth(optStr))/2, HEIGHT-40);
+            String optStr = "Press enter";
+            g.setColor(Color.WHITE);
+            Font stringFont = new Font( "OCR A Extended", Font.BOLD, 40 );
+            FontMetrics metrics = g.getFontMetrics(stringFont);
+            g.setFont(stringFont);
+            g.drawString(optStr, (WIDTH-metrics.stringWidth(optStr))/2, HEIGHT-40);
         }
         else if (stage == 1) {
             try {

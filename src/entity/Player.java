@@ -13,7 +13,7 @@ public class Player {
     public Player()
     {
         health = 100;
-        ammo = 50;
+        ammo = 30;
         armor = 0;
 
         inventory = new Weapon[6];

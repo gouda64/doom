@@ -375,20 +375,16 @@ public class DoomPanel extends JPanel implements ActionListener {
                     }
                     //case KeyEvent.VK_Z -> level.pickUp();
                     case KeyEvent.VK_1 -> {
-                        playSound("./assets/sound/dswpnup.wav");
-                        level.player.equipt(1);
+                        if (level.player.equipt(1)) playSound("./assets/sound/dswpnup.wav");
                     }
                     case KeyEvent.VK_2 -> {
-                        playSound("./assets/sound/dswpnup.wav");
-                        level.player.equipt(2);
+                        if (level.player.equipt(2)) playSound("./assets/sound/dswpnup.wav");
                     }
                     case KeyEvent.VK_3 -> {
-                        playSound("./assets/sound/dswpnup.wav");
-                        level.player.equipt(3);
+                        if (level.player.equipt(3)) playSound("./assets/sound/dswpnup.wav");
                     }
                     case KeyEvent.VK_4 -> {
-                        playSound("./assets/sound/dswpnup.wav");
-                        level.player.equipt(4);
+                        if (level.player.equipt(4)) playSound("./assets/sound/dswpnup.wav");
                     }
                     //case KeyEvent.VK_UP -> level.camera.turnUpDown(rotation);
                     //case KeyEvent.VK_DOWN -> level.camera.turnUpDown(-rotation);

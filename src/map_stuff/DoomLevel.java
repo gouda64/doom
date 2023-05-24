@@ -261,6 +261,9 @@ public class DoomLevel {
             Monster m = monsters.get(i);
             monsters.set(i, new Monster(m.getType(), m.getStartPos()));
         }
+        for (Sprite s : sprites) {
+            s.setVisible(true);
+        }
     }
 
     public Point getPlayerStart() {

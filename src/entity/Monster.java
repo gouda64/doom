@@ -27,12 +27,12 @@ public class Monster implements Sprite {
     public int shotTime = -1;
 
     private int type;
-    private static final int ZOMBIEMAN = 0; //priya
-    private static final int IMP = 1; //jen
-    private static final int DEMON = 2; //melanie
-    private static final int CACODEMON = 3; //erica
-    private static final int MANCUBUS = 4; //arnav
-    private static final int SPIDER = 5; //mr feinberg
+    private static final int ZOMBIEMAN = 0;
+    private static final int IMP = 1;
+    private static final int DEMON = 2;
+    private static final int CACODEMON = 3;
+    private static final int MANCUBUS = 4;
+    private static final int SPIDER = 5;
 
     public Monster(int type, Point initPosition)
     {

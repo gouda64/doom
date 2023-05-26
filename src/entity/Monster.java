@@ -128,7 +128,7 @@ public class Monster implements Sprite {
                 }
             }
             case SPIDER -> {
-                health = 3000;
+                health = 2500;
                 damage = 9;
                 fireDelay = 1767;
                 height = 0.1;

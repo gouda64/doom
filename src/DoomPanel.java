@@ -29,6 +29,7 @@ public class DoomPanel extends JPanel implements ActionListener {
     private int stage;
 
     private Timer timer;
+    private int delay = 51;
 
     public DoomPanel() {
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -46,7 +47,7 @@ public class DoomPanel extends JPanel implements ActionListener {
 
         level = new DoomLevel("./assets/txt/DoomBasic.txt", WIDTH, HEIGHT, 1.00, 100);
 
-        timer = new Timer(17, this); //60 fps
+        timer = new Timer(delay, this); //60 fps
         timer.start();
     }
 
@@ -90,7 +91,7 @@ public class DoomPanel extends JPanel implements ActionListener {
     }
     public void drawEquipped(Graphics g)
     {
-        if (level.player.timeSinceFired < 17*7) {
+        if (level.player.timeSinceFired < delay*7) {
             g.drawImage(level.player.getEquipped().getTexture(), 555, 350, 100, 150,null);
         }
         else {
@@ -292,7 +293,7 @@ public class DoomPanel extends JPanel implements ActionListener {
             //lose
         }
         else {
-            level.update();
+            level.update(delay);
         }
     }
 
